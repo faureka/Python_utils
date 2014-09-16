@@ -21,17 +21,17 @@ def autolabel(rects):
 
 def PlottingData(Index,RadioData,x_label,y_label,title):
 	plt.figure();
-	width = 0.5
-	RadioDataPlot = plt.bar(Index,RadioData,width,color = 'b')
+	# width = 0.5
+	RadioDataPlot = plt.bar(Index,RadioData,color = 'b')
 	plt.xlabel(x_label)
 	plt.ylabel(y_label)
 	plt.title(title)
 	plt.ylim(ymax = max(RadioData) + max(RadioData)*0.05)
-	print Index
+	# print Index
 	# plt.xlim(xmax = len(Index)+5)
 	xticks_pos = [0.5*patch.get_width() + patch.get_xy()[0] for patch in RadioDataPlot]
 	# xtickx_pos = np.arange(min(Index)+1,len(Index)+min(Index)+1)
-	plt.xticks(xticks_pos,Index)
+	plt.xticks(xticks_pos,Index,ha = 'right',rotation = 45)
 	# Index = set(map(str,Index))
 	# set(gca,'Xtick',1:5,'XTickLabel',Index)
 	# axis = plt.Axes(RadioDataPlot,[.1, .1,.8,.8])
@@ -77,7 +77,7 @@ for year in Years:
 	if year != 'NA':
 		ind = ind + 1
 
-print RadioDataSum
+# print RadioDataSum
 # print Years
 # print min(Index)
 
@@ -86,8 +86,8 @@ print RadioDataSum
 # Data Visualization
 # ######################
 # 
-# PlottingData(Index,RadioData,'Index of Countries','Radio in Household(Zeros for data not present)','Radio Data from 2008-2012')
-PlottingData(Years,RadioDataSum,'Years','Cumulative Radio according to years','Cumulative Radio Data from 2008-2012')
+PlottingData(Index,RadioData,'Index of Countries','Radio in Household(Zeros for data not present)','Radio Data from 2008-2012')
+# PlottingData(Years,RadioDataSum,'Years','Cumulative Radio according to years','Cumulative Radio Data from 2008-2012')
 
 # fig,ax = plt.subplots()
 # ax.set_xlabel('Country Index')
