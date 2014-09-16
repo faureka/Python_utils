@@ -3,8 +3,9 @@
 import csv
 import ast
 import matplotlib.pyplot as plt
-from matplotlib import axis as ax
+from matplotlib import axis,cm
 import numpy as np
+
 # plt.close('all')
 
 def autolabel(rects):
@@ -21,17 +22,31 @@ def autolabel(rects):
 
 def PlottingData(Index,RadioData,x_label,y_label,title):
 	plt.figure();
-	# width = 0.5
-	RadioDataPlot = plt.bar(Index,RadioData,color = 'b')
+	width = 1.0
+	col = cm.jet(Index)
+	RadioDataPlot = plt.bar(Index,RadioData,width,color = col)
 	plt.xlabel(x_label)
 	plt.ylabel(y_label)
 	plt.title(title)
 	plt.ylim(ymax = max(RadioData) + max(RadioData)*0.05)
 	# print Index
 	# plt.xlim(xmax = len(Index)+5)
-	xticks_pos = [0.5*patch.get_width() + patch.get_xy()[0] for patch in RadioDataPlot]
-	# xtickx_pos = np.arange(min(Index)+1,len(Index)+min(Index)+1)
-	plt.xticks(xticks_pos,Index,ha = 'right',rotation = 45)
+	Nindex = []
+	for i in xrange(len(Index)):
+		if RadioData[i] != 0:
+			Nindex.append(Index[i])
+	
+	xticks_pos= []
+	for patch in RadioDataPlot:
+		# print patch.get_height
+		if patch.get_height != 0:
+			xticks_pos.append(0.5*patch.get_width() + patch.get_xy()[0])
+
+	# xticks_pos = [0.5*patch.get_width() + patch.get_xy()[0] for patch in RadioDataPlot]
+	##xtickx_pos = np.arange(min(Index)+1,len(Index)+min(Index)+1)
+	print xticks_pos
+
+	plt.xticks(xticks_pos,Nindex,rotation = 90)
 	# Index = set(map(str,Index))
 	# set(gca,'Xtick',1:5,'XTickLabel',Index)
 	# axis = plt.Axes(RadioDataPlot,[.1, .1,.8,.8])
