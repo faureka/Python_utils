@@ -44,7 +44,7 @@ def PlottingData(Index,RadioData,x_label,y_label,title):
 
 	# xticks_pos = [0.5*patch.get_width() + patch.get_xy()[0] for patch in RadioDataPlot]
 	##xtickx_pos = np.arange(min(Index)+1,len(Index)+min(Index)+1)
-	print xticks_pos
+	# print xticks_pos
 
 	plt.xticks(xticks_pos,Nindex,rotation = 90)
 	# Index = set(map(str,Index))
