@@ -3,6 +3,7 @@ import pandas as pd
 import pprint as pp
 import numpy as np
 import ast
+import scipy.stats as st
 import re
 
 pattern1 = re.compile('^([^(0-9)-]+|[^\(\)])')
@@ -53,25 +54,34 @@ for i in xrange(len(PlayCount)):
 maxPlayCount = max(PlayCount)
 
 
-fig = pyplot.figure()                                   #Plot figure 1
-ax = fig.add_subplot(111)
-col = cm.jet(np.arange(len(PlayCount)))
-ax.scatter(Index,PlayCount,s= sPlayCount,color = col)
-tickIndex = []
-tickTrack = []
-for i in xrange(len(PlayCount)):
-	if PlayCount[i] > maxPlayCount * 0.1:
-		tickIndex.append(Index[i])
-		tickTrack.append(Track[i][0:8])
+# print data['Track].describe
+w,p = st.shapiro(PlayCount)
 
-ax.set_xticks(tickIndex)
-ax.set_xticklabels(tickTrack,rotation = 90)
-ax.set_xlim(xmin = 0)
-ax.set_ylim(ymin = 0)
-ax.set_title('Tracks played over time on Last.FM')
-ax.set_ylabel('Number of time Track is played')
-# ax.set_xlabel('Tracks')
-ax.set_axis_bgcolor('k')
+print w,p
 
-pyplot.show()
 
+
+
+
+
+# fig = pyplot.figure()                                   #Plot figure 1
+# ax = fig.add_subplot(111)
+# col = cm.jet(np.arange(len(PlayCount)))
+# ax.scatter(Index,PlayCount,s= sPlayCount,color = col)
+# tickIndex = []
+# tickTrack = []
+# for i in xrange(len(PlayCount)):
+# 	if PlayCount[i] > maxPlayCount * 0.1:
+# 		tickIndex.append(Index[i])
+# 		tickTrack.append(Track[i][0:8])
+
+# ax.set_xticks(tickIndex)
+# ax.set_xticklabels(tickTrack,rotation = 90)
+# ax.set_xlim(xmin = 0)
+# ax.set_ylim(ymin = 0)
+# ax.set_title('Tracks played over time on Last.FM')
+# ax.set_ylabel('Number of time Track is played')
+# # ax.set_xlabel('Tracks')
+# ax.set_axis_bgcolor('k')
+# pyplot.show()
+# # pyplot.close(fig)

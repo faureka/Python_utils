@@ -26,7 +26,9 @@ def remheader(coldata):
 	return coldata[1:len(coldata)-5]
 
 def normplotdata(coldata):
-	return coldata/(sum(coldata)/len(coldata)) * 100
+	coldata = np.array(coldata)
+	# print coldata.mean()
+	return (coldata - coldata.mean())/coldata.std()
 
 def plotscatter(CompInterData,AvgPopData):
 	slope =  CompInterData['Internet %'].corr(CompInterData['Computer %'])
@@ -114,16 +116,27 @@ for i in xrange(len(CountryName)):
 	for j in xrange(len(GDPcapitaData['Country or Area'])):
 		if CountryName.iloc[i].lower() == GDPcapitaData['Country or Area'].iloc[j].lower():
 			GDPData[i] = GDPcapitaData['Value'].iloc[j] + GDPData[i]
-		GDPData[i] = GDPData[i] / 5.	
+			# print i
+		# GDPData[i] = GDPData[i] / 5.0	
+indIstore = []									# indicies of countries for which GDP data is not available						
 for i in xrange(len(GDPData)):
-	if GDPData[i] == 0:
-		GDPData[i] = np.nan
+	if GDPData[i] > 0:
+		GDPData[i] = GDPData[i] / 5
+	else:
+		indIstore.append(i)
+		GDPData[i] = 0    						# numpy is treat non existent values as 0 so for now they are being treated as that only
 # GDPData = GDPData * 0.5
 
 #
 #
+
 AvgPopData = pd.DataFrame(normplotdata(popdata))
-GDPData = pd.DataFrame({'GDP per Capita':GDPData})
+# GDPData = normplotdata(GDPData)
+for i in indIstore:
+	GDPData[i] = np.nan
+GDPDataDF = pd.DataFrame({'GDP per Capita':GDPData})
+# print GDPDataDF.head()
+
 #
 ### *********** Removing '...' and str and replacing them with NAN to work with Pandas easily
 #
@@ -144,18 +157,40 @@ CompInterData = pd.DataFrame({'Internet %':InterData,
 #
 # plotscatter(CompInterData,AvgPopData)
 # popplot(CountryName_pop,AvgPop)
+sumGDPData = 0
+for i in xrange(len(GDPData)):
+	if i not in indIstore:
+		sumGDPData = sumGDPData + GDPData[i]
+meanGDP = sumGDPData / (len(GDPData) - len(indIstore))
+redline = [meanGDP]*len(CompInterData['Index'])
+
+
+
+
+
 
 fig = pyplot.figure()                                   #Plot figure 1
 ax = fig.add_subplot(111)
 #
 # ************** Color Properties of Plots
 #
-col = cm.jet(np.arange(len(InterData)))
+# col = cm.jet(np.arange(len(InterData)))
 
+# xtickspos = []
+# xtickslabels = []
+# meanpopdata = np.array(popdata).mean()
+# print meanpopdata
+# for i in xrange(len(popdata)):
+# 	if popdata[i] > 5 * meanpopdata:
+# 		xtickspos.append(i)
+# 		xtickslabels.append(CountryName[i])
+# 		print CountryName[i]
+#	
 #
-#
-# ax.scatter(GDPData['GDP per Capita'],CompInterData['Internet %'],s = AvgPopData, c = col)
-ax.plot(GDPData['GDP per Capita'],CompInterData['Index'],'--r')
+ax.scatter(CompInterData['Index'],GDPDataDF['GDP per Capita'])
+ax.plot(CompInterData['Index'],redline,'r-')
+# ax.set_xticks(xtickspos)
+# ax.set_xticklabels(xtickslabels,rotation = 70)
 #
 ################################
 pyplot.show()
