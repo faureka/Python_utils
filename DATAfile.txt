@@ -1,0 +1,179 @@
+Afghanistan	553.0933867	nan	nan
+Albania	3904.311104	nan	nan
+Algeria	4717.86164	nan	nan
+Andorra	45558.603	nan	nan
+Angola	4710.241264	nan	nan
+Anguilla	21541.52815	nan	60.0
+Argentina	9555.471518	nan	nan
+Armenia	3345.598997	nan	nan
+Aruba	25118.68651	nan	nan
+Australia	57312.86651	92.7	82.0
+Austria	47273.97818	83.3	48.0
+Azerbaijan	6159.721469	nan	nan
+Bahamas	21976.50735	87.1	78.3
+Bahrain	21668.07713	nan	nan
+Bangladesh	727.520666	nan	nan
+Barbados	15570.37825	nan	nan
+Belarus	6077.713685	90.7	81.8
+Belgium	44842.60015	nan	nan
+Belize	4631.711027	nan	nan
+Benin	727.8978418	nan	90.4
+Bermuda	88771.45238	nan	nan
+Bhutan	2171.42814	58.6	35.6
+Bolivia	2052.135026	nan	nan
+Bosnia and Herzegovina	4584.16556	nan	nan
+Botswana	6558.921317	78.5	44.1
+Brazil	10379.38181	nan	nan
+British Virgin Islands	33965.48185	nan	nan
+Brunei Darussalam	35475.18162	81.5	52.9
+Bulgaria	6838.634309	nan	nan
+Burkina Faso	598.6559779	nan	nan
+Burundi	216.6673912	nan	nan
+Cambodia	816.6815286	nan	nan
+Cameroon	1191.566243	nan	nan
+Canada	47598.84261	nan	nan
+Cayman Islands	60964.43851	nan	nan
+Chad	773.6021575	60.5	42.8
+Chile	12670.58387	nan	nan
+Colombia	6316.942814	nan	nan
+Comoros	825.5698024	nan	nan
+Congo	3041.714541	nan	nan
+Cook Islands	12830.36481	73.0	48.7
+Costa Rica	7757.83092	nan	nan
+Croatia	14245.96917	nan	nan
+Cuba	5809.851478	96.4	62.7
+Cyprus	29061.21832	96.0	73.3
+Czech Republic	19610.63816	nan	nan
+Denmark	58259.75799	nan	nan
+Djibouti	1377.53865	nan	nan
+Dominica	6802.124657	nan	38.6
+Ecuador	4801.926118	74.1	34.4
+Egypt	2689.665532	72.8	23.7
+El Salvador	3551.519357	nan	nan
+Equatorial Guinea	18693.1763	nan	nan
+Eritrea	381.1792268	83.9	78.8
+Estonia	16495.98995	nan	nan
+Ethiopia	346.590089	nan	nan
+Fiji	4075.666484	98.8	90.9
+Finland	46888.88392	89.7	79.7
+France	41159.06676	nan	nan
+French Polynesia	26874.5539	nan	nan
+Gabon	12699.80376	nan	nan
+Gambia	552.785688	nan	nan
+Georgia	2986.021104	88.6	83.9
+Germany	41611.889	47.7	nan
+Ghana	1371.188714	88.8	55.5
+Greece	26935.78829	nan	nan
+Greenland	40977.93589	nan	nan
+Grenada	7508.069209	nan	nan
+Guatemala	3006.031654	nan	nan
+Guinea	506.1880601	nan	nan
+Guinea-Bissau	541.9390766	nan	nan
+Guyana	2957.659169	nan	nan
+Haiti	641.6071343	29.6	nan
+Honduras	2108.723318	71.5	72.8
+Hungary	13389.71889	97.8	96.7
+Iceland	43560.40532	nan	nan
+India	1346.253474	34.5	nan
+Indonesia	2885.023127	49.8	24.6
+Iraq	4028.547491	93.2	77.1
+Ireland	50933.45846	91.3	73.6
+Israel	29662.60069	81.8	56.0
+Italy	35361.33761	88.5	32.7
+Jamaica	4978.543953	73.6	67.4
+Japan	42784.72108	nan	55.0
+Jordan	4072.608101	nan	nan
+Kazakhstan	9909.987879	59.8	9.1
+Kenya	820.0364872	nan	nan
+Kiribati	1553.889812	87.5	83.0
+Kuwait	47914.03794	nan	nan
+Kyrgyzstan	1021.667893	nan	nan
+Latvia	13384.35699	nan	nan
+Lebanon	8398.668942	nan	nan
+Lesotho	1044.290014	nan	nan
+Liberia	285.3651159	nan	nan
+Libya	12675.62465	nan	nan
+Liechtenstein	147237.3985	95.2	67.6
+Lithuania	13430.18438	95.3	92.6
+Luxembourg	106335.1688	nan	61.8
+Madagascar	441.9103613	nan	nan
+Malawi	414.9504252	nan	nan
+Malaysia	8991.60863	57.0	42.0
+Maldives	7119.397394	nan	nan
+Mali	685.5530364	85.7	68.9
+Malta	20465.64661	nan	nan
+Marshall Islands	3404.307302	nan	nan
+Mauritania	988.4425978	79.7	48.5
+Mauritius	8264.160477	nan	nan
+Mexico	9155.338502	nan	nan
+Monaco	158451.8583	nan	nan
+Mongolia	2598.190581	nan	37.2
+Montenegro	6875.835688	nan	nan
+Montserrat	12191.07247	90.3	53.6
+Morocco	2938.541928	nan	nan
+Mozambique	465.2741438	nan	nan
+Myanmar	825.4239281	nan	nan
+Namibia	4934.938241	nan	nan
+Nauru	7271.589251	nan	nan
+Nepal	574.6185745	92.3	93.4
+Netherlands	48732.13132	nan	nan
+New Caledonia	37866.05626	85.0	82.6
+New Zealand	33222.22843	nan	nan
+Nicaragua	1547.358064	nan	0.9
+Niger	372.4437639	nan	nan
+Nigeria	1391.033313	nan	nan
+Norway	91741.40676	nan	nan
+Oman	21844.34279	nan	nan
+Pakistan	1053.001452	71.0	nan
+Palau	10283.9882	65.2	53.7
+Panama	7683.5134	nan	nan
+Papua New Guinea	1574.829567	nan	nan
+Paraguay	3281.597584	nan	nan
+Peru	5463.473821	nan	nan
+Philippines	2168.011833	85.0	63.8
+Poland	12752.75801	93.4	62.4
+Portugal	22006.69793	90.0	65.0
+Puerto Rico	26926.50435	99.6	86.9
+Qatar	80483.50883	75.1	48.0
+Romania	8100.107739	nan	58.8
+Rwanda	533.7717546	nan	nan
+Samoa	3231.889015	nan	nan
+San Marino	69214.35736	nan	nan
+Saudi Arabia	20861.32913	64.4	29.9
+Senegal	1039.384618	nan	52.0
+Serbia	5681.759447	nan	nan
+Seychelles	10698.61807	nan	nan
+Sierra Leone	512.2976596	86.9	69.7
+Singapore	45252.69313	93.1	77.6
+Slovenia	24021.80885	nan	nan
+Solomon Islands	1423.185345	nan	nan
+Somalia	169.1762475	nan	nan
+South Africa	6628.93475	nan	nan
+South Sudan	1467.164028	94.3	72.2
+Spain	31308.03071	nan	nan
+Sri Lanka	2413.025732	nan	nan
+Sudan	1452.350918	nan	nan
+Suriname	8054.121327	nan	nan
+Swaziland	3015.623728	96.6	93.2
+Sweden	51476.46909	nan	nan
+Switzerland	73318.80465	nan	nan
+Tajikistan	781.0974101	nan	nan
+Thailand	4989.007592	nan	nan
+Timor-Leste	4270.835781	nan	nan
+Togo	541.2926097	nan	nan
+Tonga	3751.308279	nan	nan
+Tunisia	4209.110084	nan	45.8
+Turkey	10079.86132	nan	nan
+Turkmenistan	4963.085528	nan	nan
+Tuvalu	3488.060736	nan	nan
+Uganda	528.0692536	nan	nan
+Ukraine	3362.085131	99.8	84.2
+United Arab Emirates	38842.70679	94.2	88.5
+United States	48596.84421	71.6	58.2
+Uruguay	11601.98001	nan	nan
+Uzbekistan	1435.207943	nan	nan
+Vanuatu	2843.66856	nan	nan
+Viet Nam	1372.419787	nan	nan
+Yemen	1354.822813	nan	nan
+Zambia	1266.827553	nan	nan
+Zimbabwe	570.3985996	nan	nan

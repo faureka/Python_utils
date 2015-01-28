@@ -14,9 +14,9 @@ def plottingdata(Mobile,Index,Internet,CountryName):
 	# print col
 	# ax.stem(Index,Mobile,linefmt = 'b-',markerfmt = 'ko',basefmt = 'r-')
 	IndicatorPlot = ax.plot(Index,Mobile,marker = 'o',markerfacecolor = 'k',markeredgecolor ='r' ,ls = 'NONE')
-	ax.set_xlabel('Index Of countries with Mobile')
-	ax.set_ylim(ymin = -.1,ymax = 1.5)
-	axs = plt.Axes(IndicatorPlot,[.1, .1,.8,.8])
+	# ax.set_xlabel('Index Of countries with Mobile')
+	# ax.set_ylim(ymin = -.1,ymax = 1.5)
+	# axs = plt.Axes(IndicatorPlot,[.1, .1,.8,.8])
 	# ax.Axis.set_ticklabels(axs,Index)
 	plt.show()
 

@@ -40,3 +40,9 @@ Thumbs.db
 *.csv
 *.xls
 *.xlsx
+
+#Image Files
+################
+*.png
+*.jpg
+*.jpeg

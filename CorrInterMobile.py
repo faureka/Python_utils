@@ -3,21 +3,51 @@ import pandas as pd
 import pprint as pp
 import numpy as np
 import ast
-from matplotlib import pyplot,axis,cm
+from matplotlib import pyplot,axis,cm,rcParams
+import pylab as pl
+import os
+import statsmodels.api as sm
+from patsy import dmatrices
+
+dark2_colors = [(0.10588235294117647, 0.6196078431372549, 0.4666666666666667),
+                (0.8509803921568627, 0.37254901960784315, 0.00784313725490196),
+                (0.4588235294117647, 0.4392156862745098, 0.7019607843137254),
+                (0.9058823529411765, 0.1607843137254902, 0.5411764705882353),
+                (0.4, 0.6509803921568628, 0.11764705882352941),
+                (0.9019607843137255, 0.6705882352941176, 0.00784313725490196),
+                (0.6509803921568628, 0.4627450980392157, 0.11372549019607843),
+                (0.4, 0.4, 0.4)]
+
+rcParams['figure.figsize'] = (10, 6)
+rcParams['figure.dpi'] = 150
+rcParams['axes.color_cycle'] = dark2_colors
+rcParams['lines.linewidth'] = 2
+rcParams['axes.grid'] = False
+rcParams['font.size'] = 8
+rcParams['patch.edgecolor'] = 'none'
+
+colcodes = ['#1B9E75','#D65D02']
 
 #
 ########### ************  Function Definitions *********************
 #
 def inputNAN(coldata):
-	coldata.convert_objects(convert_numeric = True).dtypes
+	# coldata.convert_objects(convert_numeric = True).dtypes
+	indData = []
+	count = 0
 	for i in xrange(len(coldata)):
-		if coldata.iloc[i] == '...':
-			coldata.iloc[i] = np.nan
-			# print coldata.iloc[i]
+		if coldata.iloc[i] != '...':
+			try:
+				coldata.iloc[i]= float(coldata.iloc[i])
+				indData.append(i)
+			except:
+				coldata.iloc[i] = np.nan
 		else:
-			coldata.iloc[i]= float(coldata.iloc[i])
-		# print coldata.iloc[i]	
-	return coldata		
+			try:
+				coldata.iloc[i] = np.nan
+			except:
+				count = count + 1		
+	return coldata,indData		
 
 def prettyprint(coldata,num):
 	pp.pprint(coldata.head(n=num))
@@ -87,113 +117,84 @@ GDPcapitaData = pd.DataFrame(GDPcapitaData)
 #
 ### ********************** Segregatting data and turning them into columns ********
 #
-CompData = data['(HH4)']
-CompData = remheader(CompData)
-# prettyprint(CompData,2)
-InterData = data['(HH6)']
-InterData = remheader(InterData)
-IndexData = data['Index']
-IndexData = remheader(IndexData)
-CountryName = data['Country Name']
-CountryName = remheader(CountryName)
-CountryName_pop = PopData['Country Name']
-AvgPop = PopData['2012']
 
-#
-##############################
-#
-# prettyprint(data['Country Name'],4)
-popdata = [0]*len(CountryName)   								# *** column which hold population data according to country info in first CSV
-GDPData = [0]*len(CountryName)
+CompData = data['(HH5)'][1:len(data['(HH5)'])]
+MobData = data['(HH10)'][1:len(data['(HH10)'])]
+Country = data['Country Name'][1:len(data['Country Name'])]
+CompYear = data['Year of latest data (HH5)'][1:len(data['(HH5)'])]
+MobYear = data['Year of latest data (HH10)'][1:len(data['(HH10)'])]
+GDPCountry = GDPcapitaData['Country or Area']
+
+# GDPCountry = set(GDPCountry)
 
 
-for i in xrange(len(CountryName)):
-	for j in xrange(1,len(CountryName_pop)):
-		if CountryName.iloc[i].lower() == CountryName_pop.iloc[j].lower():
-			popdata[i] = AvgPop.iloc[j]
+CompData,indC = inputNAN(CompData)
+MobData,indM = inputNAN(MobData)
+CompYear,indCY = inputNAN(CompYear)
+MobYear,indMY = inputNAN(MobYear)
 
-for i in xrange(len(CountryName)):
-	for j in xrange(len(GDPcapitaData['Country or Area'])):
-		if CountryName.iloc[i].lower() == GDPcapitaData['Country or Area'].iloc[j].lower():
-			GDPData[i] = GDPcapitaData['Value'].iloc[j] + GDPData[i]
-			# print i
-		# GDPData[i] = GDPData[i] / 5.0	
-indIstore = []									# indicies of countries for which GDP data is not available						
-for i in xrange(len(GDPData)):
-	if GDPData[i] > 0:
-		GDPData[i] = GDPData[i] / 5
-	else:
-		indIstore.append(i)
-		GDPData[i] = 0    						# numpy is treat non existent values as 0 so for now they are being treated as that only
-# GDPData = GDPData * 0.5
+GDPdata = {}
+GDPdataMC = {}
+for i in xrange(2,len(GDPCountry)+1,5):
+	GDPdata[GDPCountry.iloc[i]] = GDPcapitaData['AVG Value'].iloc[i]
+key = GDPdata.keys()
 
-#
-#
 
-AvgPopData = pd.DataFrame(normplotdata(popdata))
-# GDPData = normplotdata(GDPData)
-for i in indIstore:
-	GDPData[i] = np.nan
-GDPDataDF = pd.DataFrame({'GDP per Capita':GDPData})
-# print GDPDataDF.head()
+finalData = pd.read_csv('DATAfile.csv',header = 0)
+finalData = finalData.dropna()
 
-#
-### *********** Removing '...' and str and replacing them with NAN to work with Pandas easily
-#
-CompData = inputNAN(CompData)
-InterData = inputNAN(InterData)
-IndexData = inputNAN(IndexData)
-#
-#
-#
-CompInterData = pd.DataFrame({'Internet %':InterData,
-							'Computer %':CompData,
-							'Index':IndexData })
+ycomp, X = dmatrices('Computer ~ GDP ', data=finalData, return_type='dataframe')
+ymob , X = dmatrices('Mobile ~ GDP',data = finalData,return_type='dataframe')
 
-#
-#
-######    Plotting Data 	##############
-#
-#
-# plotscatter(CompInterData,AvgPopData)
-# popplot(CountryName_pop,AvgPop)
-sumGDPData = 0
-for i in xrange(len(GDPData)):
-	if i not in indIstore:
-		sumGDPData = sumGDPData + GDPData[i]
-meanGDP = sumGDPData / (len(GDPData) - len(indIstore))
-redline = [meanGDP]*len(CompInterData['Index'])
+mdlcomp = sm.OLS(ycomp,X).fit()
+mdlmob = sm.OLS(ymob,X).fit()
+# print mdl.summary()
+# print mdl.params
+fig1 = pyplot.figure(facecolor = dark2_colors[2])
+ax1 = fig1.add_subplot(212)
+ax2 = fig1.add_subplot(211)
+ax1.set_axis_bgcolor(dark2_colors[1])
+ax2.set_axis_bgcolor(dark2_colors[0])
+sm.graphics.plot_fit(mdlcomp,1,ax = ax1)
+sm.graphics.plot_fit(mdlmob,1,ax = ax2)
+pyplot.savefig('Computer and Mobile Indicators vs GDP',facecolor=fig1.get_facecolor())
+
+
+
+
+'''
+with open('DATAfile.csv','w+') as f:
+	f.write('Country Name' + ',' + 'GDP'+','+'Mobile%'+','+'Computer%'+'\n')
+	for i in xrange(1,len(CompData)):
+		for j in xrange(len(key)):
+			if str(data['Country Name'].iloc[i]) == str(key[j]):
+				f.write(str(data['Country Name'].iloc[i]) + ',' + str(GDPdata[data['Country Name'].iloc[i]]) + ',' + str(MobData.iloc[i-1]) + ',' + str(CompData.iloc[i-1]) +'\n')	
+				GDPdataMC[str(key[j])] = GDPdata[key[j]]
 
 
 
 
 
 
-fig = pyplot.figure()                                   #Plot figure 1
-ax = fig.add_subplot(111)
-#
-# ************** Color Properties of Plots
-#
-# col = cm.jet(np.arange(len(InterData)))
 
-# xtickspos = []
-# xtickslabels = []
-# meanpopdata = np.array(popdata).mean()
-# print meanpopdata
-# for i in xrange(len(popdata)):
-# 	if popdata[i] > 5 * meanpopdata:
-# 		xtickspos.append(i)
-# 		xtickslabels.append(CountryName[i])
-# 		print CountryName[i]
-#	
-#
-ax.scatter(CompInterData['Index'],GDPDataDF['GDP per Capita'])
-ax.plot(CompInterData['Index'],redline,'r-')
-# ax.set_xticks(xtickspos)
-# ax.set_xticklabels(xtickslabels,rotation = 70)
-#
-################################
-pyplot.show()
-#
-################################
+	f.close()			
+os.startfile('DATAfile.csv')
+'''	 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

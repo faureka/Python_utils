@@ -8,6 +8,12 @@ import csv
 #### *******************        plot paramaters **************################
 from matplotlib import rcParams
 
+## add these to the plotting for having simple and beautiful plots!
+from mpltools import style
+from mpltools import layout
+
+style.use('ggplot')
+
 dark2_colors = [(0.10588235294117647, 0.6196078431372549, 0.4666666666666667),
                 (0.8509803921568627, 0.37254901960784315, 0.00784313725490196),
                 (0.4588235294117647, 0.4392156862745098, 0.7019607843137254),
@@ -19,13 +25,13 @@ dark2_colors = [(0.10588235294117647, 0.6196078431372549, 0.4666666666666667),
 
 rcParams['figure.figsize'] = (10, 6)
 rcParams['figure.dpi'] = 500
-rcParams['axes.color_cycle'] = dark2_colors
-rcParams['lines.linewidth'] = 2
-rcParams['axes.grid'] = False
-rcParams['font.size'] = 8
+# rcParams['axes.color_cycle'] = dark2_colors
+# rcParams['lines.linewidth'] = 2
+# rcParams['axes.grid'] = False
+# rcParams['font.size'] = 8
 rcParams['patch.edgecolor'] = 'none'
 
-colcodes = ['#1B9E75','#D65D02']
+# colcodes = ['#1B9E75','#D65D02']
 ############### ******************************   ##############################
 
 def remspecialchar(collist,checkname):
@@ -111,7 +117,7 @@ def PlotData(DataDF):
 	facecolor decided the frame color around the plot
 
 	'''
-	fig = plt.figure(facecolor = dark2_colors[7])                                   #Plot figure 1
+	fig = plt.figure()                                   #Plot figure 1
 	ax = fig.add_subplot(111)
 	'''
 	Preparing list and variables to plot
@@ -138,32 +144,32 @@ def PlotData(DataDF):
 	'''
 	Scatter plot and Line plot on the same graph
 	'''
-	ax.scatter(Index,TotalTime,c = colcodes[1],s =playCount)
+	ax.scatter(Index,TotalTime,s =playCount)
 	ax.plot(DataDF['Total Time'],label = 'Frequency') 						#label shows the Legend on the graph
 
 	'''
 	Setting the labels for the X-axis. Not plotting all the values, Clutter the x axis
 	'''
 	ax.set_xticks(Index)
-	ax.set_xticklabels(ArtistName,rotation = -65)
+	ax.set_xticklabels(ArtistName,rotation = 65)
 	plt.legend(loc = 'best')												#Decides the position of the legend automagically
 	
 	'''
 	Some more triviality regarding how the plot should look like
 	'''
-	ax.set_ylim(ymin = -10)
-	ax.set_xlim(xmin = -5,xmax = len(DataDF['Total Time'])+10)
+	# ax.set_ylim(ymin = -10)
+	# ax.set_xlim(xmin = -5,xmax = len(DataDF['Total Time'])+10)
 	'''
 	Setting the Background color of the plot
 	'''
-	ax.set_axis_bgcolor(dark2_colors[7])
+	# ax.set_axis_bgcolor(dark2_colors[7])
 
 	'''
 	Set ylabel and xlabel
 	'''
 
-	ax.set_ylabel('Amount of time(min)',fontsize = 14,family = 'monospace',fontweight='roman')
-	ax.set_xlabel('Artist',fontsize = 14,family = 'monospace',fontweight='roman')
+	ax.set_ylabel('Amount of time(min)')
+	ax.set_xlabel('Artist')
 	# ax.axis('off')
 	# ax.yaxis.set_visible(False)
 
@@ -173,10 +179,12 @@ def PlotData(DataDF):
 
 	Same happens with the ticks! parasites fucka!! die!! :D
 	'''
-	ax.spines['right'].set_visible(False)
-	ax.spines['top'].set_visible(False)
-	ax.xaxis.set_ticks_position('bottom')
-	ax.yaxis.set_ticks_position('left')
+	# ax.spines['right'].set_visible(False)
+	# ax.spines['top'].set_visible(False)
+	# ax.xaxis.set_ticks_position('bottom')
+	# ax.yaxis.set_ticks_position('left')
+
+	layout.cross_spines(ax = ax)
 
 	'''
 	Finally save the image!! Phew
@@ -185,7 +193,7 @@ def PlotData(DataDF):
 	Long live FloyD 
 	'''
 	# extent = ax.get_window_extent().transformed(plt.gcf().dpi_scale_trans.inverted())
-	plt.savefig('Itunes Frequency Analysis.png', bbox_inches='tight',facecolor=fig.get_facecolor(), transparent=True)
+	plt.savefig('Itunes Frequency Analysis.png')
 	# plt.show()
 
 
@@ -201,6 +209,7 @@ def main():
 	xml = 'iTunes Music Library.xml'
 	data = pl.readPlist(xml)
 	trackID = data['Tracks'].keys()
+	#csvwrite(trackID)
 	data,Artist,OrigArtist,TrackName,OrigTrack = csvread()
 	DataDF = DataInit(data,Artist,OrigTrack,TrackName,OrigArtist)	
 
