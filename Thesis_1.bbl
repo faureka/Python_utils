@@ -1,0 +1,73 @@
+\begin{thebibliography}{10}
+
+\bibitem{Woods85boundary}
+J.~W. Woods, J.~Biemond, and A.~M. Tekalp, ``Boundary value problem in image
+  restoration,'' in {\em Proceedings of the IEEE International Conference on
+  Acoustics,Speech, and Signal Processing}, vol.~10, pp.~692--695, April 1985.
+
+\bibitem{Ng99afast}
+M.~K. Ng, R.~H. Chan, and W.~cheung Tang, ``A fast algorithm for deblurring
+  models with neumann boundary conditions,'' {\em SIAM Journal Of Scientific
+  Computing}, vol.~21, pp.~851--866, December 1999.
+
+\bibitem{Fletcher00opt}
+R.~Fletcher, {\em Practical Methods of Optimization}.
+\newblock New York: Wiley, 2000.
+
+\bibitem{Pap91opt}
+A.~Papoulis, {\em Probability Random Variables and Stochastic Processes}.
+\newblock New York: McGraw-Hill, 1991.
+
+\bibitem{Richardson72RL}
+W.~H. Richardson, ``Bayesian-based iterative method of image restoration,''
+  {\em Journal of the Optical Society of America}, vol.~62, pp.~55--59, January
+  1972.
+
+\bibitem{Lucy74RL}
+L.~B. Lucy, ``An iteration technique for the rectification of the obscured
+  distribution,'' {\em The Astronomical Journal}, vol.~79, pp.~745--754, June
+  1974.
+
+\bibitem{matlabpaper1}
+D.~S.~C. Biggs and M.~Andrews, ``Acceleration of iterative image restoration
+  algorithms,'' {\em Applied Optics}, vol.~36, no.~8, pp.~1766--1775, 1997.
+
+\bibitem{matlabpaper2}
+R.~Hanisch, R.~White, and R.~Gilliland, ``Deconvolutions of hubble space
+  telescope images and spectra,'' in {\em Deconvolution of Images and Spectra}
+  (P.~Jansson, ed.), CA: Academic Press, 2~ed., 1997.
+
+\bibitem{bookchapt2}
+B.~K. Gunturk, ``Fundamentals of image restoration,'' in {\em Image
+  Restoration:Fundamentals and Advances} (B.~K. Gunturk and X.~Li, eds.),
+  pp.~25--61, Boca Raton: CRC Press, 2013.
+
+\bibitem{Ber05boundary}
+M.~Bertero and P.~Boccacci, ``A simple method for the reduction of boundary
+  effects in the ricardson-lucy approach to image deconvolution,'' {\em
+  Astronomy \& Astrophysics}, pp.~369--374, 2005.
+
+\bibitem{hanson1993introduction}
+K.~M. Hanson, ``Introduction to bayesian image analysis,'' in {\em Medical
+  Imaging 1993}, pp.~716--731, International Society for Optics and Photonics,
+  1993.
+
+\bibitem{fish1995blind}
+D.~Fish, A.~Brinicombe, E.~Pike, and J.~Walker, ``Blind deconvolution by means
+  of the richardson--lucy algorithm,'' {\em JOSA A}, vol.~12, no.~1,
+  pp.~58--65, 1995.
+
+\bibitem{Bi94conv}
+H.~Bi and G.~Boerner, ``{When does the Richardson-Lucy deconvolution
+  converge?},'' {\em Astronomy and Astrophysics Suppl.}, vol.~108,
+  pp.~409--415, Dec. 1994.
+
+\bibitem{lamport1985i1}
+L.~Lamport, {\em I1 ($\backslash$ LaTeX)---A Document}, vol.~410.
+\newblock pub-AW, 1985.
+
+\bibitem{MATLAB:2012}
+MATLAB, {\em version 8.0.0.783 (R2012b)}.
+\newblock Natick, Massachusetts: The MathWorks Inc., 2012.
+
+\end{thebibliography}

@@ -1,0 +1,657 @@
+\documentclass[a4paper]{book}	
+
+\usepackage{graphicx}
+\usepackage{geometry}
+%\usepackage[dvips]{graphicx}
+%\usepackage[hypertex]{hyperref} % hyperlinks for references.
+\usepackage{amsmath} % easier math formulae, align, subequations \ldots
+\usepackage{fullpage}
+\usepackage[]{mcode} %for inline matlab code insertion
+\usepackage{algorithm} %for pseudocode 
+\usepackage{algorithmic} %for pseudocode 
+\usepackage{float} %for manually deciding the placement of figure and tables
+\usepackage{mathtools}	% for multlined equations
+\usepackage{mathabx} % for symbols not defined in amsmath
+\usepackage{parskip} %for paragraph spacing
+%\RequirePackage[]{mcode}
+\setlength{\parskip}{15pt}
+\setcounter{tocdepth}{2}
+%\setlength{\parindent}{4em}
+\RequirePackage[singlelinecheck=off]{caption}
+%\geometry{a4paper,total={210mm,297mm}}
+
+%\usepackage[nottoc]{tocbibind}
+%\usepackage{titlesec}
+%\usepackage[titles]{tocloft}
+%
+%\renewcommand\cftchapfont{\normalfont}
+%\renewcommand\cftchappagefont{\normalfont}
+
+\AtBeginDocument{\renewcommand\contentsname{Table of Contents}}
+
+%\titleformat{\chapter}[display]
+%{}{\hfill\rule{.7\textwidth}{3pt}}{0pt}
+%{\hspace*{.3\textwidth}\huge\bfseries}[\addvspace{-1pt}]
+%\titleformat{name=\chapter,numberless}[display]
+%{}{\hfill\rule{.7\textwidth}{3pt}}{0pt}
+%{\hspace*{.3\textwidth}\huge\bfseries}[\addvspace{-1pt}]
+
+
+%\usepackage{newalg}
+%\usepackage[noend]{algpseudocode}
+%\usepackage{pdftex}
+
+\newcommand{\pder}[2][]{\frac{\partial#1}{\partial#2}}
+
+
+\linespread{1.6}
+
+\begin{document}
+	\captionsetup{justification=centering}
+	
+\frontmatter
+%\include{front_page}
+\chapter{Abstract}
+\tableofcontents
+%\listoftables
+\listoffigures
+
+\mainmatter
+	\chapter{Introduction}
+	\thispagestyle{empty}
+	\chapter{Image Restoration}
+	\thispagestyle{empty}
+
+	\section{\Large Linear Shift-Invariant Degradation Model}
+	
+	\paragraph*{}Suppose that \textit{f(x,y)} is the true image that we would like to recover from the degraded measurement \textit{g(x,y)}, where \textit{(x,y)} are the spatial coordinates. For a linear shift-invariant system, the imaging process can be formulated as 
+	\begin{equation}
+	\label{eq3.1}
+	g(x,y) = h(x,y) * f(x,y) + n(x,y),
+	\end{equation}
+	where "*" is the convolution operation, \textit{h(x,y)} is the PSF of the imaging system, and \textit{n(x,y)} is the additive noise. The imaging formulation can also be done in matrix-vector form or in frequency domain. Defining $\textbf{g,f}$ and $\textbf{n}$ as the vectorized versions of \textit{g(x,y),f(x,y)} and \textit{n(x,y)},respectively,the matrix-vector formulation is
+	\begin{equation}
+	\label{eq3.2}
+	\textbf{g = Hf + n,}
+	\end{equation}
+	where \textbf{H} is a two-dimensional sparse matrix with elements taken from \textit{h(x,y)} to have the proper mapping from $ \textbf{f} $ to $ \textbf{g} $. The vectorization could be done in a number of ways, including raster-scan, row-major, and column-major order.
+	\paragraph*{} On the other hand, the Fourier-domain version of the imaging model is
+	\begin{equation}
+	\label{eq3.3}
+	G(u,v) = H(u,v)F(u,v) + N(u,v)
+	\end{equation}
+	where \textit{G(u,v), H(u,v), F(u,v),} and \textit{N(u,v)} are the Fourier transforms of \textit{g(x,y), h(x,y), f(x,y),} and \textit{n(x,y)}, respectively.
+%
+%	\paragraph*{}
+	\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width = 3in]{figure1.png}
+		\caption{\small Linear shift-invariant image degradation model}
+		\label{fig:1}
+	\end{center}
+	\end{figure}
+
+
+	\paragraph*{}Since recorded images are of finite spatial extent, the support of the PSF goes beyond the borders of the degraded image; this boundary value problem may create artifacts affecting the entire restored image. The simplest way of extending an image is zero padding, assuming all pixels outside measured region have zero values. With this extension, the blur matrix \textbf{H} has a Block Toeplitz with Toeplitz Block (BTTB) or simply Doubly Block Structure.Another common method is periodic extension,in which case the blur matrix \textbf{H} is Block Circulant with Circulant Block (BCCB).Because a BCCB matrix can be diagonalized by discrete Fourier transform, periodic extension is the implicit method in Fourier domain solutions.
+
+
+	\paragraph*{}The PSF \textit{h(x,y)} is the impulse response of the imaging system; it is the image of a point from the scene and essentially tells the smallest image detail an imaging system can form. It's Fourier transform \textit{H(u,v)} is the frequency response of the imaging system and is called the optical transfer function(OTF). In general, frequency domain analysis of an imaging system provides additional insight about the behavior of the system. Also, when there are multiple subsystems, we can multiply the individual transfer functions to get the overall transfer function. This method is easier than the repeated convolution of the impulse responses and allows for easy visualization and understanding of the performance of the overall system.
+	
+	
+	\paragraph*{}The major factors contributing to the image degradation are as follows.
+	
+	
+	\begin{itemize}
+		\item \textit{Diffraction:} Because of the wave nature of the light, an optical system can form a point image. Even when there is no other degradation (such a system is called a diffraction-limited system), an optical system will have a characteristic minimum blur,which is determined by the aperture of the system. For a circular aperture of diameter \textit{D}, the diffraction PSF has a specific shape known as the Airy Disk. The well-known Rayleigh resolution limit to discern two discrete points, $1.22\frac{\lambda f}{D} $, is approximately the distance between the maximum and the first minimum of the Airy disk.
+		\item \textit{Atmospheric Blur:} Atmospheric distortion are caused mainly by turbulence and aerosol scattering/absorption. A turbulent medium causes wavefront tilt, resulting in local or global image shifts. The MTF of the atmospheric turbulence typically has an exponential decay, with dependence on various parameters, including medium characteristics, path length,and exposure time. Aerosol effects, on the other hand, cause diffusion and are modeled well with a Gaussian MTF. It is possible to estimate these parameters and restore images.
+		\item \textit{Out-of-focus Blur:} The out-of-focus PSF takes the shape of the camera aperture. For a circular aperture, the PSF is a disk, which is sometimes referred to as the circle of confusion. For a thin-lens model, it can be shown that the diameter of the disk is $ D(|d' - d|/d')m $,where \textit{D} is the diameter of the disk, \textit{f} is the focal length, \textit{d} is the distance between the lens and the in-focus plane, $ d' $ is the distance between the lens and the out-of-focus plane, and \textit{m} is the lens magnification.
+		\item \textit{Motion Blur:} Motion blur occurs when the scene is not static and the exposure time is not small enough with respect to the motion in the scene or the camera. In such a case the projected imagery is smeared over the sensor according to the motion.
+		\item \textit{Sensor Blur:} A sensor integrates light over a photosensitive are, which is typically a rectangular area forming the PSF of the sensor. If there is a micro-lens array in front of the sensor, then the sensor PSF takes the shape of the micro-lens.
+		\item \textit{Anti-Aliasing Filter:} Aliasing happens if the spatial sampling rate is less than the Nyquist rate. To prevent aliasing, an anti-Aliasing filter should be applied before the image plane. The anti-aliasing filter should be designed accordng to the photosite pitch and the color filter array.
+		\item \textit{Optical Abberation:} An optical system may introduce additional aberrations, including spherical aberration,chromatic aberration and geometric distortion. blur caused by optical aberrations could be space varying and color channel dependent.
+		\item \textit{Noise:} In addition to the blurring effects, the image could also be corrupted by noise. There are different sources of noise, including dark current, shot noise, read noise and quantization.
+	\end{itemize}
+	
+
+	\section{\Large Image Restoration Methods}
+	
+%	\subsection{Optimization Algorithms}
+	\subsection{Least Square Estimation}
+	\paragraph*{}The inverse problem of estimating $ \textbf{f} $ from the observation $ \textbf{g = Hf} $ is typically not well-posed because of non-existence, non-uniqueness, or instability of solution. The least squares estimation minimizes the sum of squared differences between the real observation $ g(x,y) $ and the predicted observation $ h(x,y) \ast f(x,y) $. The cost function to be minimized can be written as $ \sum_{(x,y)} |g(x,y)-h(x,y)\ast f(x,y)|^{2}$ in spatial domain, $ \sum_{(x,y)} |G(u,v)-H(u,v)F(u,v)|^{2} $ in Fourier domain, and $ ||g - Hf||^{2} $ in matrix-vector notation. The solution in matrix-vector notation is 
+\begin{equation}
+\label{eq3.4}
+\hat{\textbf{f}} = \arg\min_{f} ||\textbf{g} - \textbf{Hf}||^{2} = \textbf{H}^{+}\textbf{g},
+\end{equation}
+\paragraph*{}where \textbf{H}\textsuperscript{+} is known as the pseudo-inverse of \textbf{H}. For an over-determined full-rank system, the pseudo-inverse is \textbf{H}\textsuperscript{+}$=$(\textbf{H}\textsuperscript{\textit{T}}\textbf{H})\textsuperscript{-1}\textbf{H}\textsuperscript{\textit{T}}, which can be derived by setting the derivative of the cost function to zero: $\frac{\partial}{\partial{\textbf{f}}}||\textbf{g}-\textbf{Hf}||^{2} = 2\textbf{H}^{T}\textbf{Hf}-2\textbf{H}^{T}\textbf{g} = 0$. 
+	
+\subsection{Steepest Descent Algorithm}
+\paragraph*{}It is one of the most widely used method for convex optimization and convergence.The prime factor for it's popularity being that it is un-dissembling and very easy to implement. The steepest descent method updates an initial estimate iteratively in the reverse direction of the gradient of the cost function $ C(\textbf{f}) $. An iteration of the steepest descent method is 
+\begin{equation}
+\label{eq3.5}
+\textbf{f}^{(i+1)}=\textbf{f}^{(i)} - \alpha \pder{\textbf{f}}{C(\textbf{f})} 
+\end{equation}
+where:\\ $ \alpha $ is the step size \\ $ \textbf{f}^{(i)} $ is the $ i^{th} $ estimate\\
+
+In our case where cost function is defined as $C(\textbf{f})=(1/2)||\textbf{g}-\textbf{Hf}||^{2}$, and also changing matrix-vector notation to indexing notation the iteration step is 
+\begin{equation}
+\label{eq3.6}
+f^{(i+1)}(x,y) = f^{(i)}(x,y) + \alpha h^{T}(x,y)*(g(x,y)-h(x,y)*f^{(i)}(x,y))
+\end{equation}
+\paragraph*{}The iteration are repeated until the stopping criterion, which can be either number of maximum iteration possible, or the rate of change in the estimated signal $ ||\textbf{f}^{(i+1)} - \textbf{f}^{(i)}||/||\textbf{f}^{(i)}||$ or in the cost function. The step size i.e. $ \alpha $ should be small enough to ensure converge and large enough so that the rate of convergence is fast.
+%\vfill
+\begin{algorithm}[h!]
+	\caption{Steepest Descent Algorithm}
+	\label{alg1}
+%	\caption{}
+	\begin{algorithmic}
+		\STATE $ \delta \leftarrow$ value near minima of  $f(x) $ 
+		\STATE fix a random start point  $ x_{0} $
+		\STATE choose  $ \alpha $ 
+		\IF {$ f(x) \geq \delta $}
+		\STATE	calculate $ \nabla f(x) |_{x_{0}}$
+		\STATE search in $ - \nabla f(x)$
+		\STATE update $ x_{i+1} = x_{i} + \alpha*d_{i} $  // $ d_{i} $  is the direction of fall of gradient
+		\ENDIF
+		\end{algorithmic}
+	
+\end{algorithm}
+
+
+
+\subsection{Conjugate Gradient Algorithm}
+This method is a much more efficient than the steepest descent algorithm,
+and it assumes that the gradient of the cost function is calculable at every step, and that this information can be used to improve the search for the global minimum.This method uses the conjugate gradients for traversing
+downhill, in place of the gradient of the cost function. As a result, the solution is
+quick and reached in comparatively fewer iterations.
+\begin{algorithm}[h!]
+	\caption{Conjugate Gradient Algorithm}
+	\label{alg2}
+	%	\caption{}
+	\begin{algorithmic}
+		\STATE $ \delta \leftarrow$ value near minima of  $f(x) $ 
+		\STATE fix a random start point  $ x_{0} $
+		\STATE choose  $ \alpha $ 
+		\IF {$ f(x) \geq \delta $}
+		\STATE	calculate $ \nabla f(x) |_{x_{0}}$
+		\STATE search in $ - \nabla f(x)$
+		\STATE update $ \alpha $ such that $ f(x + \alpha_{(i)}*d_{i}) < f(x + \alpha*d_{i})$  // $ d_{i} $  is the direction of fall of gradient
+		\STATE update $ x_{i+1} = x_{i} + \alpha*d_{i} $  
+		\ENDIF
+	\end{algorithmic}
+	
+\end{algorithm}
+
+
+\subsection{Wiener Filtering}
+The Wiener estimator looks for an estimate in the form \textbf{\^{f}} $ = \textbf{Wg} + \textbf{b} $ that minimizes the mean square error between the true image and the estimated image, $E\{(\textbf{f}-\textbf{\^{f}})\textsuperscript{\textit{T}}(\textbf{f}-\textbf{\^{f}})\}$ where $ E\{.\} $ is the expectation operator. The optimal \textbf{W} and \textbf{b} values can be obtained using the orthogonality principle, which specifies two conditions : (1) the expected value of the estimate must be equal to the estimated value of the true image, that is, $ E\{\textbf{\^{f}}\} = E\{\textbf{f}\} $; and (2) the restoration error must be orthogonal to the observation about it's mean, that is $ E\{(\textbf{f}-\textbf{\^{f}})(\textbf{g}-E\{\textbf{g}\})\textsuperscript{T}\} = 0.$. From the first condition, the bias term can be written as 
+\begin{equation}
+\label{eq3.7}
+b = E\{\textbf{f}\} - \textbf{W}E\{\textbf{g}\},
+\end{equation}
+and by substituting the bias term and \textbf{\^{f}} $ = \textbf{Wg} + \textbf{b} $ into the second condition, the restoration matrix is found to be 
+\begin{equation}
+\label{eq3.8}
+\textbf{W} = \textbf{Q}_{\textbf{fg}}\textbf{Q}_{\textbf{g}}^{-1},
+\end{equation}
+
+where $ \textbf{Q}_{\textbf{fg}} = E\{(\textbf{f} - E\{\textbf{f}\})(\textbf{g}-E\{\textbf{g}\})^{T} \} $ is the cross-covariance matrix between the true image and the observation, and $ \textbf{Q}_{\textbf{g}} = E\{(\textbf{g} - E\{\textbf{g}\})(\textbf{g}-E\{\textbf{g}\})^{T} \} $ is the covariance matrix of the observation. Simplifying further for the case of \textbf{LSI} system and using the assumption that true image and noise are uncorrelated, the Wiener filter(3.8) is 
+\begin{equation}
+\label{eq3.9}
+\textbf{W} = \textbf{Q}_{\textbf{f}}\textbf{H}^{T}(\textbf{H}\textbf{Q}_{\textbf{f}}\textbf{H}^{T} + \textbf{Q}_{\textbf{n}})^{-1},
+\end{equation}
+
+where $ \textbf{Q}_{\textbf{f}} $ and $ \textbf{Q}_{\textbf{n}} $ are the covariance matrices of the true image and noise. The bias term is zero only when expected values of true and observed image are zero. But we can avoid the bias term by mean normalizing the observed and estimated images before applying the filter (3.8), and finally adding the true image mean to obtain the solution.
+\paragraph*{} The Wiener filter in Fourier domain provide further insight to the solution. It is given as,
+\begin{equation}
+\label{eq3.10}
+	W(u,v) = \frac{H^{*}(u,v)}{|H(u,v)|^{2}+\frac{S_{n}(u,v)}{S_{f}(u,v)}},
+\end{equation}
+
+where $ S_{n}(u,v) $ and $ S_{f}(u,v) $ are power spectral densities of noise and true image respectively. Thus, estimated image is given as $\hat{F}(u,v) = W(u,v)G(u,v)$. In absence of any blur i.e. $ H = 1 $, the filter takes form 
+\begin{equation}
+\label{eq3.11}
+	W(u,v) = \frac{S_{f}(u,v)}{S_{n}(u,v) + S_{f}(u,v)}
+\end{equation}
+which at low frequencies, take form $ W(u,v) = 1 $ i.e. allow all the information to pass, and at high frequencies becomes \textbf{\textit{SNR}}. 
+In absence of noise the filter goes to the other extreme and behave as an inverse filter $ W(u,v) = \frac{1}{H(u,v)} $.
+\bigskip
+\begin{algorithm}[]
+	\caption{Wiener Filtering (\textbf{G},\textbf{f})}
+	\label{alg3}
+	\begin{algorithmic}
+		\FOR{$ k \rightarrow 0 $ \TO $ 2 $ }
+			\STATE calculate \textbf{\^H} $ =  \frac{1}{1+k} $
+			\STATE calculate estimate \textbf{\^F} $ = \textbf{HG} $ 
+			\STATE find $ \hat{\textbf{F}} $ such that $ \sqrt{|f - \hat{f}|^{2}} $ is minimum
+			\STATE output $\textbf{\^F} $
+		\ENDFOR	
+	\end{algorithmic}
+\end{algorithm}
+\newpage
+\subsubsection*{Experiments and Results}
+ The original images in Figure \ref{fig3.2}(left), Figure \ref{fig3.4}(left), and Figure\ref{fig3.6}(left)  were degraded by white Gaussian blur and white Gaussian noise with $ {\sigma_b}_1 = 1.2 $ and $ {\sigma_n}_1 = 15 $, $ {\sigma_b}_2 = 1.0 $ and $ {\sigma_n}_2 = 10 $, and $ {\sigma_b}_3 = 0.5 $ and $ {\sigma_n}_3 = 15 $ respectively. The resulting images in Figure\ref{fig3.2}(right),  Figure\ref{fig3.4}(right), and  Figure\ref{fig3.6}(right) thus obtained were passed through Wiener filter implemented in $ \mathtt{MATLAB} $ using algorithm \ref{alg3}. 
+ The results Figure\ref{fig3.3}(left), Figure\ref{fig3.5}(left), and Figure\ref{fig3.7}(left) were compared to the results of in-built $ \mathtt{MATLAB}'s $ function \textit{wiener2} Figure\ref{fig3.3}(right), Figure\ref{fig3.5}(right), and Figure\ref{fig3.7}(right) respectively.
+
+\begin{figure}[H]		
+	\begin{center}
+		\includegraphics[]{Images/wienerFiltering/lenaoriginaldegraded.png}
+		\caption{Gray-scale Lena image used for the experiment}
+		\label{fig3.2}
+	\end{center}
+\end{figure}
+
+\begin{figure}[H]		
+	\begin{center}
+		\includegraphics[]{Images/wienerFiltering/lenamymatlab.png}	
+			\caption{Result of my implementation of Wiener filter and $ \mathtt{MATLAB} $ in-built option}
+			\label{fig3.3}
+	\end{center}		
+\end{figure}
+
+\begin{figure}[H]		
+	\begin{center}
+		\includegraphics[]{Images/wienerFiltering/cycleorigdegrd.png}
+		\caption{Grayscale image used for the experiment}
+		\label{fig3.4}
+	\end{center}
+\end{figure}
+\begin{figure}[H]		
+	\begin{center}
+		\includegraphics[]{Images/wienerFiltering/cyclemymatlab.png}	
+		\caption{Result of my implementation of Wiener filter and $ \mathtt{MATLAB} $ in-built option}
+		\label{fig3.5}
+	\end{center}
+\end{figure}
+
+\begin{figure}[H]		
+	\begin{center}
+		\includegraphics[]{Images/wienerFiltering/mandrinorigdegr.png}
+		\caption{RGB mandarin image used for the experiment}
+		\label{fig3.6}
+	\end{center}
+\end{figure}
+
+
+\begin{figure}[H]		
+	\centering
+	\includegraphics[]{Images/wienerFiltering/mandrinmymatlab.png}	
+	\caption{Result of my implementation of Wiener filter and $ \mathtt{MATLAB} $ in-built option}
+	\label{fig3.7}
+\end{figure}
+\newpage
+\section{\Large Bayesian Image Restoration} \label{BIR}
+Bayes’s law states that the posterior probability is proportional to the product of the
+likelihood and the prior probability i.e. $ P(A|B) = \frac{P(B|A)P(A)}{P(B)} $, where for proposition $ A $ and evidence $ B $\\
+$ P(A) $ is the $ prior $, \\
+$ P(A|B) $ is the $ posteriori $,  \\
+$ P(B|A)P(B) $ is the support of $ A $, \\ 
+The likelihood encompasses the information contained in the new
+data. The prior expresses the degree of certainty concerning the situation before the data are taken. Bayesian estimation provides an elegant statistical perspective to the image restoration problem. The unknown image, noise, and PSF(in case of blind deconvolution) are all treated as random variables. 
+%The maximum $ a posteriori $ (MAP) estimator maximizes $ p(\textbf{f}|\textbf{g})$, using Bayes' rule which can be written as
+%\begin{equation}
+%\label{eq3.12}
+%	\hat{f} = \arg\max_\textbf{f}p(\textbf{f}|\textbf{g}) = \arg\max_\textbf{f}\frac{p(\textbf{g}|\textbf{f})p(\textbf{f})}{p(\textbf{g})} = \arg\max_\textbf{f}p(\textbf{g}|\textbf{f})p(\textbf{f}),
+%\end{equation} 
+%where $ p(\textbf{f}) $ is the $ prior $ probability and $ p(\textbf{g}|\textbf{f}) $ is the conditional probability. The term $ p(\textbf{g}) $ is dropped in the last equation as it is constant with respect to the argument $ \textbf{f} $.
+
+\paragraph*{} In most image restoration problems, image noise is modeled to be zero-mean independent identically distributed (iid) Gaussian random variable: $ p(n(x,y)) = \frac{1}{\sqrt{2\pi}\sigma_{n}}\exp\left(-\frac{1}{2\sigma_{n}^{2}}(n(x,y))^{2}\right)$. Thus conditional probability of the observed image is 
+\begin{equation}
+\begin{multlined}
+	\label{eq3.12}
+	p(\textbf{g}|\textbf{f}) = \prod_{x,y}\frac{1}{\sqrt{2\pi}\sigma_{n}}\exp\left(-\frac{1}{2\sigma_{n}^{2}}(g(x,y)-h(x,y)*f(x,y))^{2}\right) \\
+	= \frac{1}{\left(\sqrt{2\pi}\sigma_{n}\right)^{M}}
+		\exp\left(-\frac{1}{2\sigma_{n}^{2}} ||\textbf{g} - \textbf{Hf}||^{2}_{2} \right),
+\end{multlined}
+\end{equation}
+where $ \sigma_{n} $ is noise standard deviation and $ M $ is the total number of pixels in the observed image.
+But in many cases where the noise is modeled as Poisson random process then the conditional probability of the observed image is 
+
+\begin{equation}
+	\label{eq3.13}
+	p(\textbf{g}|\textbf{f}) = \prod_{x,y}\frac{\left(h(x,y)*f(x,y)\right)^{g(x,y)}\exp \left(-(h(x,y)*f(x,y))\right)}{g(x,y)!}
+\end{equation}
+
+% Using Equation \ref{eq3.12} and Equation \ref{eq3.13} and neglecting irrelevant terms we will obtain,
+%\begin{equation}
+%	\label{eq3.14}
+%	\hat{f} = \arg\max_\textbf{f} \lbrace-\frac{1}{2\sigma_{n}^{2}} ||\textbf{g} - \textbf{Hf}||^{2} + \log p(\textbf{f}) \rbrace 
+%\end{equation} 
+%
+The Equation \ref{eq3.13} when using ML estimator approaches the well-known iterative Richardson-Lucy algorithm,
+
+\begin{equation}
+	\label{eq3.14}
+	f^{(i+1)}(x,y) = \left[\frac{g(x,y)}{h(x,y)*f^{(i)}(x,y)}*h^T(x,y)\right]*f^{(i)}(x,y)
+\end{equation}
+\paragraph*{} Richardson-Lucy or RL algorithm can be used both for \textit{non-blind},in which we assume the blurring operator to be known, and \textit{blind},in which we assume the blurring operator is unknown, deconvolution. The problem in \textit{non-blind} restoration is the PSF of the image is rarely known with certainty and if otherwise it's not accurate. This gives rise to PSF mismatch, which in-turn leads to poor deblurring results. The presence of noise further intensifies the problem.
+
+
+\chapter{Richardson-Lucy Algorithm}
+\thispagestyle{empty}
+In the section \ref{BIR}, R-L algorithm was introduced briefly. We will now discuss the same in details. The iterative R-L algorithm is based on Bayesian restoration and uses the fact that we have $ a priori $ knowledge of the PSF kernel. Also we will assume that the size of the estimated image, degraded image and the original image is same, which makes the iterations simpler.
+\section{\Large Pseudo-code}
+\begin{algorithm}
+	\caption{Iterative R-L Algorithm}
+	\label{alg4}
+	\begin{algorithmic}
+		\STATE degraded image $ g $ and kernel $ k $
+		\STATE initial estimate $ f_0 = g \convolution k $
+		\FOR{iteration 1 \TO 10}
+			\STATE Subtract from blurred image $b = f - f_i \convolution k $
+			\STATE Add the error corrected image $ a = b + f_i $
+			\STATE Set image for next iteration $ f_i = a $
+		\ENDFOR
+	\end{algorithmic}
+\end{algorithm}
+\newpage
+\section{\Large $ \mathtt{MATLAB} $ code explanation}
+
+\paragraph* {Given} an image $\mathtt{I}$, which is $ \textit{blurred} $ and $ \textit{noisy} $, an initial estimate of kernel $\mathtt{h}$.Find the best estimate of the $ de-convolved $ image $ \mathtt{J}$.
+
+\subsection{Definitions}
+\paragraph*{\normalsize DECONVLUCY}$\mathtt{J} = deconvlucy(\mathtt{I,PSF})$ deconvolve image $ \mathtt{I} $ using $ Lucy-Richardson $ algorithm, returning $ deblurred $ image $ \mathtt{J} $. The assumption is that the image $ \mathtt{I} $ was created by $ convolving $ a true image with a point-spread function $ PSF$ $\mathtt{h} $ and possibly by adding $ noise $.\\
+\begin{itemize}
+	\item NUMIT \textit{(optional)} number of iterations the algorithm runs through. Default value is $ 10 $.
+	\item READOUT \textit{(optional)} Additive $ noise $.Default value is $ 0 $.
+	\item SUBSMPL \textit{(optional)} is used when the $ PSF $ finer than the image. Default is $ 1 $.
+\end{itemize}
+%\subparagraph*{\small NUMIT} \textit{(optional)} number of iterations the algorithm runs through. Default value is $ 10 $.
+%
+%\subparagraph*{\small READOUT} \textit{(optional)} Additive $ noise $.Default value is $ 0 $.
+%
+%\subparagraph*{\small SUBSMPL} \textit{(optional)} is used when the $ PSF $ finer than the image. Default is $ 1 $.
+
+\subsection{Code Interpretation}
+\subsubsection{Preparing $ PSF $}
+\mcode{sizeOTF(numNSdim) = SUBSMPL *sizeI(numNSdim)};// If sampling rate of $ PSF $ is not same as that of image.
+\mcode{H = psf2otf(PSF,sizeOTF);}// Changing from time domain to frequency domain. $ i.e.$ $ \mathtt{H} = DFT(PSF)$
+
+\subsubsection{Preparing Parameter for Iterations}
+\mcode{wI = max(WEIGHT.*(READOUT + J{1}),0);}// Generate $ wI $ matrix such that the positivity constraints are satisfied. i.e. $ wI = 0$ or $ wI = noisy$ $pixel$ $ value > 0 $\\
+\mcode{scale = real(ifftn(conj(H).*fftn(WEIGHT(idx{:})))) + sqrt(eps);}// Scaling factor based on the weight matrix and how the flat-field of the image is defined.
+%\newpage
+\subsection{L\_R Interations}
+\mcode{for k = 1:NUMIT}// Loop over the number of iterations
+\paragraph{Image predictions for the next iteration}
+\mcode{Y = max(J{2} + lambda*(J{2} - J{3}),0);}// difference between the last two iterations of the algorithm. Basically this generates the error correction matrix. Also enforces positivity constraints.
+\paragraph{Core for the L\_R interations}
+\mcode{CC = corelucy(Y,,H,DAMPAR22,wI,READOUT,SUBSMPL,idx,vec,num);}//calling the in-built function which performs the basic \textbf{Lucy} algorithm.\\
+\mcode{J{3} = J{2};} //$ previous = next $\\
+\mcode{J{2} = max(Y.*real(ifftn(conj(H).*CC))./scale,0);} //$ J\{2\} = y \otimes \left(h^T \otimes CC\right)$ in time domain.\\
+\mcode{J{4} = [J{2}(:)-Y(:) J{4}(:,1)];} // Implementation related iterations. This is related to optimization technique of $ \mathtt{MATLAB} $ internally.
+\subsubsection{Corelucy}
+\paragraph{Resampling and Reshaping}
+\mcode{ReBlurred = real(ifftn(H.*fftn(Y)));} // Reblurring the image get an initial estimate $i.e.$ $ y\otimes h $.
+\begin{lstlisting}
+if SUBSMPL ~= 1,
+ReBlurred = reshape(ReBlurred,vec);
+for k = num,
+vec(k) = [];
+ReBlurred = reshape(mean(ReBlurred,k),vec);
+end
+end;
+\end{lstlisting}
+
+\subparagraph*{}\textbf{\small Explanation}: This code snippet reshapes \textbf{\small ReBlurred} matrix on number of $ non-singleton$ $dimensions$ 
+\
+
+\subsubsection{Estimation for next Iteration}
+\mcode{ReBlurred = ReBlurred + READOUT;} // Adding $ noise $ to image if present. \\
+\mcode{ReBlurred(ReBlurred == 0) = eps;} // Positivity constraint. \\
+\mcode{AnEstim = wI./ReBlurred + eps;} // solving the equation $ Ax=B  $ for each element in the \textbf{\small ReBlurred} to get an estimate of the output image. $ eps $ is used to maintain the positivity constraint.
+\begin{lstlisting}
+if DAMPAR22 == 0,% No Damping
+ImRatio = AnEstim(idx{:});
+else % Damping of the image relative to DAMPAR22 = (N*sigma)^2
+gm = 10;
+g = (wI.*log(AnEstim)+ ReBlurred - wI)./DAMPAR22;
+g = min(g,1);
+G = (g.^(gm-1)).*(gm-(gm-1)*g);
+ImRatio = 1 + G(idx{:}).*(AnEstim(idx{:}) - 1);
+end;
+\end{lstlisting}
+\bigskip
+\mcode{f = fftn(ImRatio);} // return the image generated by the function
+
+
+
+\section{\Large Convergence of RL Algorithm}
+R-L algorithm starts usually from an initial model of constant density distribution that apparently has maximum entropy as well as being perfectly smooth, then it modifies the estimates step by step by collecting information from the observational data until a reasonable fit is reached. This approach is opposite to that of any regularization methods, which searches for best fitted models subject to constraints like smoothness or flatness.
+Since the \textit{likelihood} of model fitting is improved after each step while an infinite number of iterations is neither possible nor useful, we need to figure out when to stop the iterations. This become increasingly more important especially when \textit{a priori} knowledge about the signal is not available or the signal-to-noise ratio is poor.
+\newpage	
+\subsection[Experiments]{Experimental Observations}
+The algorithm was tested under different conditions to check the convergence and find an optimal number of iterations. The test images in each of the experiments are gray-scale. 
+\begin{figure}[H]
+	\includegraphics[]{Images/RLalgo/MSEvsIterations.jpg}
+	\caption{MSE error of an estimated image and original image vs log of iteration of R-L algorithm performed }
+	\label{MSE1}
+\end{figure}
+\paragraph*{} We started off by performing large number of iterations for the R-L algorithm on images that have been degraded by Gaussian blur kernel and white Gaussian noise. The algorithm was thought to be asymptotically convergent, but the results were not in agreement with the theory. The behavior of my implementation of the algorithm and $ \mathtt{MATLAB}'s $ were identical. From Figure \ref{MSE1} it is evident the algorithm diverges as the number of iterations increases. A decrease in MSE was observed between $\mathtt{5}$ to $\mathtt{100}$ iterations region. Most of the experiments were then performed only for the aforementioned iterations region only.
+
+%\begin{figure}[]
+%	\centering
+%	\includegraphics[]{Images/RLalgo/comparision_myalgo_matlab_error_15.png}
+%	\caption{Comparison of performance of my implementation and $ MATLAB's $implementation for 15 iterations}
+%	\label{comp15mymatlab}
+%\end{figure}
+%
+%\begin{figure}[]
+%	\centering
+%	\includegraphics[]{Images/RLalgo/comparision_myalgo_matlab_error_10.png}
+%	\caption{Comparison of performance of my implementation and $ MATLAB's $implementation for 10 iterations}
+%	\label{comp10mymatlab}
+%\end{figure}
+
+\paragraph*{} In the subsequent experiments we tried to figure out the cause for the divergence of the $ \mathtt{MATLAB}'s $ implementation of the algorithm. SIV blurring with white Gaussian noise was applied to gray-scale images and RL algorithm iterations were performed. 
+\paragraph*{} In Graph\ref{comp15mymatlab} and Graph\ref{comp10mymatlab}, the square root of MSE was recorded and compared between my implementation of the algorithm and that of the $ \mathtt{MATLAB} $. It is can noted that till $ \mathtt{10} $ iterations the error is reasonable. Also it can be seen that my implementation closely follows the $ \mathtt{MATLAB's} $ implementation.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_myalgo_matlab_error_15.png}
+		\caption[RL implementation comparison 15 iterations]{Comparison of performance of my implementation and $ \mathtt{MATLAB}'s $ implementation for 15 iterations}
+		\label{comp15mymatlab}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_myalgo_matlab_error_10.png}
+		\caption[RL implementation comparison 10 iterations]{Comparison of performance of my implementation and $ \mathtt{MATLAB}'s $ implementation for 10 iterations}
+		\label{comp10mymatlab}
+	\end{minipage}
+\end{figure}
+
+\paragraph*{} Then the experiments were performed to find out the convergence of \textit{blind} and \textit{non-blind} RL algorithm ($ \mathtt{MATLAB} $) respectively. The initially the number of iteration were kept a little a high to find out that when does the algorithm starts to diverge.
+
+\paragraph*{}The experiment was performed on gray-scale images which were only \textit{blurred} by Gaussian blur kernel. No noise was added to the test images. The results showed that the algorithm first starts to converge and then diverge. Graph\ref{conv20blur} shows the results as recorded.
+\paragraph*{} When only noise ($ \mathtt{WGN} $) was applied to the test images the results were entirely different. The MSE error just kept on increasing with each iteration. Graph\ref{conv20noisy} shows the recorded results.
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_matlab_PSF_20_only_blur.png}
+		\caption[RL convergence on blurred image ]{Convergence of \textit{deconvlucy blind} and \textit{nonblind} for only blurred image}
+		\label{conv20blur}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_matlab_PSF_20_only_noise.png}
+		\caption[RL convergence on noisy image]{Convergence of \textit{deconvlucy blind} and \textit{nonblind} for only noisy image}
+		\label{conv20noisy}
+	\end{minipage}
+\end{figure}
+
+\paragraph*{}The experiment was then repeated with going on till only $ \mathtt{10} $ iterations. From Graph\ref{conv10blur} we can infer that it is reasonable to run the algorithm for upto $ \mathtt{10} $ iterations to gain significant results when the image is only SIV blurred. 
+\paragraph*{} Whereas on the other hand from Graph\ref{conv10noisy}, we can infer that if the image only affected by $ \mathtt{WGN} $, the error keeps on increasing even for small number of iterations.
+
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_matlab_PSF_10_only_blur.png}
+		\caption[RL convergence on blurred image ]{Convergence of \textit{deconvlucy blind} and \textit{nonblind} for only blurred image}
+		\label{conv10blur}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_matlab_PSF_10_only_noise.png}
+		\caption[RL convergence on noisy image]{Convergence of \textit{deconvlucy blind} and \textit{nonblind} for only noisy image}
+		\label{conv10noisy}
+	\end{minipage}
+\end{figure}
+
+
+\paragraph*{} The experiments were then repeated to benchmark my implementation of the algorithm against the $ \mathtt{MATLAB's} $ implementation. The images were only subjected to SIV Gaussian blur and MSE was recorded for the $ \mathtt{20} $ and $ \mathtt{10} $ iterations respectively.
+Graph\ref{convcomp20blur} and Graph\ref{convcomp10blur} show the recorded results respectively.
+\paragraph*{} From the result it is evident that my implementation closely follow the $ \mathtt{MATLAB's} $ implementation. Also the deviation is with the range of error. We can thus safely assume to run the algorithm for $ \mathtt{10} $ iterations. The RL algorithm performs better on images which are not corrupted by noise and are only blurred.
+\paragraph*{} The experiments performed gave an in-sight to the working of the RL algorithm. They showed the performance of algorithm in different conditions and iterations. The main objective of the experiments was to study the convergence of the RL algorithm. Since the Algorithm\ref{alg4} is a difference algorithm the reason for divergence can be the addition of the MSE error to the estimated image over and over again after the best match is found. Thus it is recommended to run the algorithm for upto $ \mathtt{10} $ iterations, as that will give the best results.
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_myalgo_matlab_20_only_blur.png}
+		\caption[Comparison of RL convergence on blurred image ]{Comparison of convergence of \textit{deconvlucy blind} for only blurred image}
+		\label{convcomp20blur}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/RLalgo/comparision_myalgo_matlab_10_only_blur.png}
+		\caption[Comparison of RL convergence on blurred image]{Comparison of convergence of \textit{deconvlucy blind} for only blurred image}
+		\label{convcomp10blur}
+	\end{minipage}
+\end{figure}
+
+
+
+%\paragraph*{} In the subsequent experiments we tried to figure out the cause for the divergence of the $ \mathtt{MATLAB}'s $ implementation of the algorithm. SIV blurring with white Gaussian noise was applied to gray-scale images and RL algorithm iterations were performed. 
+%\paragraph*{} In Graph\ref{comp15mymatlab} and Graph\ref{comp10mymatlab}, the square root of MSE was recorded and compared between my implementation of the algorithm and that of the $ \mathtt{MATLAB} $. It is can noted that till $ \mathtt{10} $ iterations the error is reasonable. Also it can be seen that my implementation closely follows the $ \mathtt{MATLAB's} $ implementation.
+
+%\paragraph*{} Then the experiments were performed to find out the convergence of \textit{blind} and \textit{non-blind} RL algorithm ($ \mathtt{MATLAB} $) respectively. The initially the number of iteration were kept a little a high to find out that when does the algorithm starts to diverge.
+%
+%\paragraph*{}The experiment was performed on gray-scale images which were only \textit{blurred} by Gaussian blur kernel. No noise was added to the test images. The results showed that the algorithm first starts to converge and then diverge. Graph\ref{conv20blur} shows the results as recorded.
+%\paragraph*{} When only noise ($ \mathtt{WGN} $) was applied to the test images the results were entirely different. The MSE error just kept on increasing with each iteration. Graph\ref{conv20noisy} shows the recorded results.
+
+
+%\section{\Large Experiments and Results}
+\section[\Large Effect of kernel]{\Large Effect of kernel size on Image and PSF estimation}After performing experiments to see the convergence of the RL algorithm (Algorithm \ref{alg4}), effect of other parameters on the restoration of images were studied. One such parameter was kernel estimation and size. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale = 0.8]{Images/Kernelest/Error_Image_lucy_different_kernel_size.png}
+	\caption[MSE in image estimation for kernel sizes]{MSE in \textit{Blind} image restoration using RL algorithm at different kernel sizes in image estimation}
+	\label{BIDkernel}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale = 0.8]{Images/Kernelest/Error_psf_different_kernel_size.png}
+	\caption[MSE in kernel estimation for kernel sizes]{MSE in \textit{Blind} image restoration using RL algorithm at different kernel sizes in kernel estimation}
+	\label{KernelEstkernel}
+\end{figure}
+\newpage
+\paragraph*{} As the size of kernel increases the estimated image deviates from the original image. Also the kernel estimation for the RL algorithm becomes increasingly difficult. Graph \ref{BIDkernel} provides us an insight as to how the image estimation is affected by the kernel size. The MSE decreases for odd value of kernel size for smaller values. This is a direct implication of the fact that the Gaussian kernel size is chosen to be $\lfloor6*\sigma\rfloor + 1$, which indeed be always be odd. This further is an implication of the fact of the \textit{$ 99\% $ confidence interval}.
+\paragraph*{} Graph \ref{KernelEstkernel} shows that the kernel estimate has minimum effect due to the change in size of the kernel. As the kernel size increases, that is the energy of the kernel spreads, the estimation gets better.
+
+\section{\Large \texttt{C++} Implementation}
+
+\begin{figure}[ht!]
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics*[width = 1.2\textwidth]{Images/cppimp/origbar.png}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width = 1.2\textwidth]{Images/cppimp/degrabar.png}
+	\end{minipage}
+	\centering	
+	\caption[Barbara Image \texttt{C++} implementation]{Original image(left) and degraded image(right)}
+	\label{degrabar}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale = 0.65]{Images/cppimp/matimpl.png}
+	\caption[$ \mathtt{MATLAB's}$ output ]{Output of \textit{deconvlucy} $ \mathtt{MATLAB} $}
+	\label{matimpl}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale = 0.65]{Images/cppimp/myimpl.png}
+	\caption[\texttt{C++} output]{Output of \texttt{C++} implementation of RL}
+	\label{myimpl}
+\end{figure}
+\newpage
+
+\begin{figure}[ht!]
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics*[]{Images/cppimp/origcam.png}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[]{Images/cppimp/motionblurredcam.png}
+	\end{minipage}
+	\centering	
+	\caption[Cameraman image \texttt{C++} implementation]{Original image(left) and degraded image(right)}
+	\label{motionblurredcam}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[]{Images/cppimp/matcam.png}
+		\caption{Ouput of \textit{deconvlucy} $ \mathtt{MATLAB} $}
+		\label{matcam}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[]{Images/cppimp/myimplcam.png}
+		\caption{Output of \texttt{C++} implementation}
+		\label{myimplcam}
+	\end{minipage}
+%	\centering	
+\end{figure}
+
+\begin{figure}
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[scale = 0.65]{Images/cppimp/PeppersRGB.png}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[scale = 0.65]{Images/cppimp/degPeppersRGB.png}
+	\end{minipage}
+%	\centering
+	\caption{RGB text image(left) and degraded image(right)}
+	\label{pepperRGB}
+\end{figure}
+
+\begin{figure}
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[scale = 0.65]{Images/cppimp/matpepper.png}
+		\caption{Output of \textit{deconvlucy} $ \mathtt{MATLAB} $}
+		\label{matpepper}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[scale = 0.65]{Images/cppimp/mypepper.png}
+		\caption{Output of \texttt{C++} implementation}
+		\label{mypepper}
+	\end{minipage}
+\end{figure}
+%\centering
+%\includegraphics[scale = 0.65]{Images/cppimp/mypepper.png}
+%\centering
+%\includegraphics[]{Images/cppimp/matcam.png}
+%\caption{Output of \textit{deconvlucy} $ \mathtt{MATLAB} $}
+%\label{matcam}
+
+\bibliographystyle{ieeetr}
+\nocite{*}
+\bibliography{thesis}
+\end{document}
