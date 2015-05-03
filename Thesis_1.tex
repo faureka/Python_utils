@@ -14,6 +14,8 @@
 \usepackage{mathabx} % for symbols not defined in amsmath
 \usepackage{parskip} %for paragraph spacing
 \usepackage{titlesec}
+\usepackage{pdfpages}
+\usepackage{url}
 \setlength{\parskip}{15pt}
 \setcounter{tocdepth}{2}
 \RequirePackage[singlelinecheck=off]{caption}
@@ -32,8 +34,14 @@
 	
 \frontmatter
 %\include{front_page}
+\includepdf[pages=-]{frontpage}
 \chapter[\LARGE Acknowledgement]{Acknowledgement}
 \thispagestyle{empty}
+I am grateful to the guidance provided by Dr. Aravind R., my Dual Degree project advisor. Doing a project under his guidance has helped me get exposed to varied topics and aspects of image restoration and their application in the field of image processing. His continued encouragement helped me grow in my support.
+
+\paragraph*{}I thank Dr. A. N. Rajagopalan and other faculty members and PhD. students from the image processing group of Electrical Engineering IIT Madras for their help in carrying out my project successfully.
+\paragraph*{}I also thank my family for their unquestioned support and trust in me.
+\paragraph*{}And last but not the least I would I like to thank Leslie Lamport and D. Knuth for \LaTeX  and \url{http://tex.stackexchange.com/} for their unrestricted support.
 \cleardoublepage
 \chapter[\LARGE Abstract]{Abstract}
 \thispagestyle{empty}
@@ -575,7 +583,7 @@ We then used \textit{opencv} image processing modules to implement the Algorithm
 
 \paragraph*{} The last experiment was performed on RGB images. As earlier the original RGB image was converted to YCbCr image and then the blur kernel was applied on the \texttt{Y component} (luminance). The output of the  \textit{deconvlucy }$ \mathtt{MATLAB} $ and \texttt{C++} implementation are visibly similar. The difference in the color rendering is not different either.
 
-\begin{figure}[]
+\begin{figure}[H]
 	\begin{minipage}{0.45\textwidth}
 		\centering
 		\includegraphics*[width = 1.2\textwidth]{Images/cppimp/origbar.png}
@@ -589,21 +597,21 @@ We then used \textit{opencv} image processing modules to implement the Algorithm
 	\label{degrabar}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale = 0.50]{Images/cppimp/matimpl.png}
 	\caption[$ \mathtt{MATLAB's}$ output ]{Output of \textit{deconvlucy} $ \mathtt{MATLAB} $}
 	\label{matimpl}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[scale = 0.50]{Images/cppimp/myimpl.png}
 	\caption[\texttt{C++} output]{Output of \texttt{C++} implementation of RL}
 	\label{myimpl}
 \end{figure}
 
-\begin{figure}[]
+\begin{figure}[H]
 	\begin{minipage}{0.45\textwidth}
 		\centering
 		\includegraphics*[]{Images/cppimp/origcam.png}
@@ -617,7 +625,7 @@ We then used \textit{opencv} image processing modules to implement the Algorithm
 	\label{motionblurredcam}
 \end{figure}
 
-\begin{figure}[]
+\begin{figure}[H]
 	\centering
 	\begin{minipage}{0.45\textwidth}
 		\centering
@@ -634,7 +642,7 @@ We then used \textit{opencv} image processing modules to implement the Algorithm
 %	\centering	
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 	\begin{minipage}{0.45\textwidth}
 		\centering
 		\includegraphics[scale = 0.65]{Images/cppimp/PeppersRGB.png}
@@ -648,7 +656,7 @@ We then used \textit{opencv} image processing modules to implement the Algorithm
 	\label{pepperRGB}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
 	\begin{minipage}{0.45\textwidth}
 		\centering
 		\includegraphics[scale = 0.65]{Images/cppimp/matpepper.png}
