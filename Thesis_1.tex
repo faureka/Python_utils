@@ -13,36 +13,17 @@
 \usepackage{mathtools}	% for multlined equations
 \usepackage{mathabx} % for symbols not defined in amsmath
 \usepackage{parskip} %for paragraph spacing
-%\RequirePackage[]{mcode}
+\usepackage{titlesec}
 \setlength{\parskip}{15pt}
 \setcounter{tocdepth}{2}
-%\setlength{\parindent}{4em}
 \RequirePackage[singlelinecheck=off]{caption}
 %\geometry{a4paper,total={210mm,297mm}}
-
-%\usepackage[nottoc]{tocbibind}
-%\usepackage{titlesec}
-%\usepackage[titles]{tocloft}
-%
-%\renewcommand\cftchapfont{\normalfont}
-%\renewcommand\cftchappagefont{\normalfont}
+\providecommand{\keywords}[1]{\textbf{\textit{Index terms---}} #1}
 
 \AtBeginDocument{\renewcommand\contentsname{Table of Contents}}
 
-%\titleformat{\chapter}[display]
-%{}{\hfill\rule{.7\textwidth}{3pt}}{0pt}
-%{\hspace*{.3\textwidth}\huge\bfseries}[\addvspace{-1pt}]
-%\titleformat{name=\chapter,numberless}[display]
-%{}{\hfill\rule{.7\textwidth}{3pt}}{0pt}
-%{\hspace*{.3\textwidth}\huge\bfseries}[\addvspace{-1pt}]
-
-
-%\usepackage{newalg}
-%\usepackage[noend]{algpseudocode}
-%\usepackage{pdftex}
 
 \newcommand{\pder}[2][]{\frac{\partial#1}{\partial#2}}
-
 
 \linespread{1.6}
 
@@ -51,18 +32,50 @@
 	
 \frontmatter
 %\include{front_page}
-\chapter{Abstract}
+\chapter[\LARGE Acknowledgement]{Acknowledgement}
+\thispagestyle{empty}
+\cleardoublepage
+\chapter[\LARGE Abstract]{Abstract}
+\thispagestyle{empty}
+The purpose of this project is to investigate different image restoration algorithms and their applications and implications. The study is done on the techniques of restoration of shift-invariant blurred images which are corrupted by noise.
+\paragraph*{}The first part of the project deals with various optimization methods used in image processing. The techniques evaluated are tested on different parameters and then used in the algorithms described further. This part also deals with Wiener filtering and an introductory mathematical formulation of Richardson-Lucy algorithm.
+\paragraph*{}The thesis then deals with the aforementioned Richardson-Lucy algorithm. The algorithm was compared against other blind image restoration algorithm. The convergence of the Richardson-Lucy algorithm is dealt with details on gray-scale and colored images alike. The convergence of the algorithm is observed in noisy-blurred images and also in separate cases. Finally the thesis compares the performance of $  \mathtt{MATLAB}$'s implementation and the \texttt{C++} implementation of the algorithm.
+
+\keywords{Image Processing, Richardson-Lucy Algorithm, \texttt{C++} implementation, data analysis}
+\cleardoublepage
+
 \tableofcontents
-%\listoftables
+\cleardoublepage
+\addcontentsline{toc}{chapter}{\LARGE \listfigurename}
 \listoffigures
-
+\cleardoublepage
 \mainmatter
-	\chapter{Introduction}
+	\chapter[\LARGE Introduction]{Introduction}
 	\thispagestyle{empty}
-	\chapter{Image Restoration}
+	In many imaging applications, the measure image is a degraded version of the \textit{true} (or \textit{original}) image that ideally represents the scene. The degradation may be due to 
+	\begin{itemize}
+		\item Atmospheric distortions (including turbulence and aerosol scattering)
+		\item Optical aberrations (such as diffraction and out-of-focus blur)
+		\item Sensor blur (resulting from spatial averaging of photosites)
+		\item Motion blur (resulting from camera shake or the movements of objects in the scene)
+		\item Noise (such as shot noise and quantization)
+	\end{itemize}
+	\paragraph*{}Image restoration algorithms aim to recover the true image from degraded measurements. This inverse problem is typically ill-posed, meaning that the solution does not satisfy at least one of the following: \textit{existence}, \textit{uniqueness}, or \textit{stability}. Regularization techniques are often adopted to obtain a solution with desired properties, indicating a knowledge of prior information.
+	\paragraph*{}Image restoration is widely used in almost all technical areas involving images; astronomy,remote sensing, microscopy, medical imaging, photography, surveillance, and HDTV systems to name a few. For example, license plate may appear illegible due to motion blur; photographs captured under low-light conditions may suffer from noise; out-of-focus photographs may look blurry; standard TV signals may not be sufficiently sharp for high-definitions TV sets; archived movies may be corrupted by artifacts and noise; atmospheric distortions may degrade the quality of images in remote sensing. In these examples and in many more scenarios, the importance of image restoration ranges from beneficial to essential.
+	
+	\paragraph*{} \textit{Deblurring} is commonly referred to restoration of images degraded by blur. Although the degradation process is in general non-linear and spatial varying, a large number of problems could be addressed with a linear shift-invariant(LSI) model (Section \ref{LSImodel}). Because the output of an LSI system is the convolution of the true image with the impulse response of the system, the point spread function(PSF), image restoration in LSI systems is called image \textit{deconvolution}. When the impulse response of the system is a delta function and there is only noise, the restoration process becomes image \textit{denoising}. If the PSF is unknown, then the problem is referred to as \textit{blind} image restoration.\cite{bookchapt2}
+	
+	\paragraph*{}The past three decades have brought significant progress in the development of efficient methods for classical deconvolution in both single and multi-image scenarios. Most of the earlier work was concentrated on the \textit{Space Invariant} (SIV) blurring.\cite{bookchapt3} 
+	
+	\paragraph*{}The subsequent chapters deal in details the LSI model (Section \ref{secLSImodel}) of image degradation. Then we will look into different Image restoration algorithm (Section \ref{secIR}) with inclination towards SIV blurred images and their restoration. Also the optimization algorithm (Algorithm \ref{alg1} and Algorithm \ref{alg2})used will be discussed.
+	We will then shift our focus towards Bayesian Image Restoration (Section \ref{BIR}) and analyze the methods when we have \textit{a priori} information.
+	\paragraph*{} The main focus of this thesis is Richardson-Lucy algorithm which we discuss in much detail in Chapter \ref{chapRL}. We will look through the $ \mathtt{MATLAB} $ implementation of the algorithm, understand the working of it (Section \ref{secMATLAB}) and then convert the code into a working \texttt{C++} code. We compare the results from $ \mathtt{MATLAB} $ implementation and the \texttt{C++} implementation.
+	
+	
+	\chapter[\LARGE Image Restoration]{Image Restoration}\label{chapIR}
 	\thispagestyle{empty}
 
-	\section{\Large Linear Shift-Invariant Degradation Model}
+	\section{\Large Linear Shift-Invariant Degradation Model}\label{secLSImodel}
 	
 	\paragraph*{}Suppose that \textit{f(x,y)} is the true image that we would like to recover from the degraded measurement \textit{g(x,y)}, where \textit{(x,y)} are the spatial coordinates. For a linear shift-invariant system, the imaging process can be formulated as 
 	\begin{equation}
@@ -92,7 +105,7 @@
 	\end{figure}
 
 
-	\paragraph*{}Since recorded images are of finite spatial extent, the support of the PSF goes beyond the borders of the degraded image; this boundary value problem may create artifacts affecting the entire restored image. The simplest way of extending an image is zero padding, assuming all pixels outside measured region have zero values. With this extension, the blur matrix \textbf{H} has a Block Toeplitz with Toeplitz Block (BTTB) or simply Doubly Block Structure.Another common method is periodic extension,in which case the blur matrix \textbf{H} is Block Circulant with Circulant Block (BCCB).Because a BCCB matrix can be diagonalized by discrete Fourier transform, periodic extension is the implicit method in Fourier domain solutions.
+	\paragraph*{}Since recorded images are of finite spatial extent, the support of the PSF goes beyond the borders of the degraded image; this boundary value problem may create artifacts affecting the entire restored image\cite{Woods85boundary}. The simplest way of extending an image is zero padding, assuming all pixels outside measured region have zero values. With this extension, the blur matrix \textbf{H} has a Block Toeplitz with Toeplitz Block (BTTB) or simply Doubly Block Structure.\cite{Ng99afast} Another common method is periodic extension,in which case the blur matrix \textbf{H} is Block Circulant with Circulant Block (BCCB).Because a BCCB matrix can be diagonalized by discrete Fourier transform, periodic extension is the implicit method in Fourier domain solutions.
 
 
 	\paragraph*{}The PSF \textit{h(x,y)} is the impulse response of the imaging system; it is the image of a point from the scene and essentially tells the smallest image detail an imaging system can form. It's Fourier transform \textit{H(u,v)} is the frequency response of the imaging system and is called the optical transfer function(OTF). In general, frequency domain analysis of an imaging system provides additional insight about the behavior of the system. Also, when there are multiple subsystems, we can multiply the individual transfer functions to get the overall transfer function. This method is easier than the repeated convolution of the impulse responses and allows for easy visualization and understanding of the performance of the overall system.
@@ -113,11 +126,11 @@
 	\end{itemize}
 	
 
-	\section{\Large Image Restoration Methods}
+	\section{\Large Image Restoration Methods}\label{secIR}
 	
 %	\subsection{Optimization Algorithms}
 	\subsection{Least Square Estimation}
-	\paragraph*{}The inverse problem of estimating $ \textbf{f} $ from the observation $ \textbf{g = Hf} $ is typically not well-posed because of non-existence, non-uniqueness, or instability of solution. The least squares estimation minimizes the sum of squared differences between the real observation $ g(x,y) $ and the predicted observation $ h(x,y) \ast f(x,y) $. The cost function to be minimized can be written as $ \sum_{(x,y)} |g(x,y)-h(x,y)\ast f(x,y)|^{2}$ in spatial domain, $ \sum_{(x,y)} |G(u,v)-H(u,v)F(u,v)|^{2} $ in Fourier domain, and $ ||g - Hf||^{2} $ in matrix-vector notation. The solution in matrix-vector notation is 
+	\paragraph*{}The inverse problem of estimating $ \textbf{f} $ from the observation $ \textbf{g = Hf} $ is typically not well-posed because of non-existence, non-uniqueness, or instability of solution. The least squares estimation minimizes the sum of squared differences between the real observation $ g(x,y) $ and the predicted observation $ h(x,y) \ast f(x,y) $. The cost function to be minimized can be written as $ \sum_{(x,y)} |g(x,y)-h(x,y)\ast f(x,y)|^{2}$ in spatial domain, $ \sum_{(x,y)} |G(u,v)-H(u,v)F(u,v)|^{2} $ in Fourier domain, and $ ||g - Hf||^{2} $ in matrix-vector notation.\cite{Fletcher00opt} The solution in matrix-vector notation is 
 \begin{equation}
 \label{eq3.4}
 \hat{\textbf{f}} = \arg\min_{f} ||\textbf{g} - \textbf{Hf}||^{2} = \textbf{H}^{+}\textbf{g},
@@ -161,8 +174,7 @@ f^{(i+1)}(x,y) = f^{(i)}(x,y) + \alpha h^{T}(x,y)*(g(x,y)-h(x,y)*f^{(i)}(x,y))
 \subsection{Conjugate Gradient Algorithm}
 This method is a much more efficient than the steepest descent algorithm,
 and it assumes that the gradient of the cost function is calculable at every step, and that this information can be used to improve the search for the global minimum.This method uses the conjugate gradients for traversing
-downhill, in place of the gradient of the cost function. As a result, the solution is
-quick and reached in comparatively fewer iterations.
+downhill, in place of the gradient of the cost function. As a result, the solution is quick and reached in comparatively fewer iterations.\cite{Fletcher00opt}
 \begin{algorithm}[h!]
 	\caption{Conjugate Gradient Algorithm}
 	\label{alg2}
@@ -183,7 +195,7 @@ quick and reached in comparatively fewer iterations.
 
 
 \subsection{Wiener Filtering}
-The Wiener estimator looks for an estimate in the form \textbf{\^{f}} $ = \textbf{Wg} + \textbf{b} $ that minimizes the mean square error between the true image and the estimated image, $E\{(\textbf{f}-\textbf{\^{f}})\textsuperscript{\textit{T}}(\textbf{f}-\textbf{\^{f}})\}$ where $ E\{.\} $ is the expectation operator. The optimal \textbf{W} and \textbf{b} values can be obtained using the orthogonality principle, which specifies two conditions : (1) the expected value of the estimate must be equal to the estimated value of the true image, that is, $ E\{\textbf{\^{f}}\} = E\{\textbf{f}\} $; and (2) the restoration error must be orthogonal to the observation about it's mean, that is $ E\{(\textbf{f}-\textbf{\^{f}})(\textbf{g}-E\{\textbf{g}\})\textsuperscript{T}\} = 0.$. From the first condition, the bias term can be written as 
+The Wiener estimator looks for an estimate in the form \textbf{\^{f}} $ = \textbf{Wg} + \textbf{b} $ that minimizes the mean square error between the true image and the estimated image, $E\{(\textbf{f}-\textbf{\^{f}})\textsuperscript{\textit{T}}(\textbf{f}-\textbf{\^{f}})\}$ where $ E\{.\} $ is the expectation operator. The optimal \textbf{W} and \textbf{b} values can be obtained using the orthogonality principle\cite{Pap91opt}, which specifies two conditions : (1) the expected value of the estimate must be equal to the estimated value of the true image, that is, $ E\{\textbf{\^{f}}\} = E\{\textbf{f}\} $; and (2) the restoration error must be orthogonal to the observation about it's mean, that is $ E\{(\textbf{f}-\textbf{\^{f}})(\textbf{g}-E\{\textbf{g}\})\textsuperscript{T}\} = 0.$. From the first condition, the bias term can be written as 
 \begin{equation}
 \label{eq3.7}
 b = E\{\textbf{f}\} - \textbf{W}E\{\textbf{g}\},
@@ -317,19 +329,19 @@ But in many cases where the noise is modeled as Poisson random process then the 
 %	\hat{f} = \arg\max_\textbf{f} \lbrace-\frac{1}{2\sigma_{n}^{2}} ||\textbf{g} - \textbf{Hf}||^{2} + \log p(\textbf{f}) \rbrace 
 %\end{equation} 
 %
-The Equation \ref{eq3.13} when using ML estimator approaches the well-known iterative Richardson-Lucy algorithm,
+The Equation \ref{eq3.13} when using ML estimator approaches the well-known iterative Richardson-Lucy algorithm\cite{Richardson72RL}\cite{Lucy74RL},
 
 \begin{equation}
 	\label{eq3.14}
 	f^{(i+1)}(x,y) = \left[\frac{g(x,y)}{h(x,y)*f^{(i)}(x,y)}*h^T(x,y)\right]*f^{(i)}(x,y)
 \end{equation}
-\paragraph*{} Richardson-Lucy or RL algorithm can be used both for \textit{non-blind},in which we assume the blurring operator to be known, and \textit{blind},in which we assume the blurring operator is unknown, deconvolution. The problem in \textit{non-blind} restoration is the PSF of the image is rarely known with certainty and if otherwise it's not accurate. This gives rise to PSF mismatch, which in-turn leads to poor deblurring results. The presence of noise further intensifies the problem.
+\paragraph*{} Richardson-Lucy or RL algorithm can be used both for \textit{non-blind},in which we assume the blurring operator to be known, and \textit{blind},in which we assume the blurring operator is unknown, deconvolution. The problem in \textit{non-blind} restoration is the PSF of the image is rarely known with certainty and if otherwise it's not accurate. This gives rise to PSF mismatch, which in-turn leads to poor deblurring results. The presence of noise further intensifies the problem.\cite{almeida2010blind}
 
 
-\chapter{Richardson-Lucy Algorithm}
+\chapter[\LARGE Richardson-Lucy Algorithm]{Richardson-Lucy Algorithm}\label{chapRL}
 \thispagestyle{empty}
 In the section \ref{BIR}, R-L algorithm was introduced briefly. We will now discuss the same in details. The iterative R-L algorithm is based on Bayesian restoration and uses the fact that we have $ a priori $ knowledge of the PSF kernel. Also we will assume that the size of the estimated image, degraded image and the original image is same, which makes the iterations simpler.
-\section{\Large Pseudo-code}
+\section{\Large Pseudo-code}\label{secPseudo}
 \begin{algorithm}
 	\caption{Iterative R-L Algorithm}
 	\label{alg4}
@@ -344,9 +356,9 @@ In the section \ref{BIR}, R-L algorithm was introduced briefly. We will now disc
 	\end{algorithmic}
 \end{algorithm}
 \newpage
-\section{\Large $ \mathtt{MATLAB} $ code explanation}
+\section{\Large $ \mathtt{MATLAB} $ code explanation}\label{secMATLAB}
 
-\paragraph* {Given} an image $\mathtt{I}$, which is $ \textit{blurred} $ and $ \textit{noisy} $, an initial estimate of kernel $\mathtt{h}$.Find the best estimate of the $ de-convolved $ image $ \mathtt{J}$.
+\paragraph* {Given} an image $\mathtt{I}$, which is $ \textit{blurred} $ and $ \textit{noisy} $, an initial estimate of kernel $\mathtt{h}$.Find the best estimate of the \textit{de-convolved} image $ \mathtt{J}$.\cite{matlabpaper1,matlabpaper2} 
 
 \subsection{Definitions}
 \paragraph*{\normalsize DECONVLUCY}$\mathtt{J} = deconvlucy(\mathtt{I,PSF})$ deconvolve image $ \mathtt{I} $ using $ Lucy-Richardson $ algorithm, returning $ deblurred $ image $ \mathtt{J} $. The assumption is that the image $ \mathtt{I} $ was created by $ convolving $ a true image with a point-spread function $ PSF$ $\mathtt{h} $ and possibly by adding $ noise $.\\
@@ -370,10 +382,10 @@ In the section \ref{BIR}, R-L algorithm was introduced briefly. We will now disc
 \mcode{wI = max(WEIGHT.*(READOUT + J{1}),0);}// Generate $ wI $ matrix such that the positivity constraints are satisfied. i.e. $ wI = 0$ or $ wI = noisy$ $pixel$ $ value > 0 $\\
 \mcode{scale = real(ifftn(conj(H).*fftn(WEIGHT(idx{:})))) + sqrt(eps);}// Scaling factor based on the weight matrix and how the flat-field of the image is defined.
 %\newpage
-\subsection{L\_R Interations}
+\subsection{L-R Interations}
 \mcode{for k = 1:NUMIT}// Loop over the number of iterations
 \paragraph{Image predictions for the next iteration}
-\mcode{Y = max(J{2} + lambda*(J{2} - J{3}),0);}// difference between the last two iterations of the algorithm. Basically this generates the error correction matrix. Also enforces positivity constraints.
+\mcode{Y = max(J{2} + lambda*(J{2} - J{3}),0);}// difference between the last two iterations of the algorithm. Basically this generates the error correction matrix. Also enforces positivity constraints.\cite{matlabpaper2}
 \paragraph{Core for the L\_R interations}
 \mcode{CC = corelucy(Y,,H,DAMPAR22,wI,READOUT,SUBSMPL,idx,vec,num);}//calling the in-built function which performs the basic \textbf{Lucy} algorithm.\\
 \mcode{J{3} = J{2};} //$ previous = next $\\
@@ -415,9 +427,9 @@ end;
 
 
 
-\section{\Large Convergence of RL Algorithm}
+\section{\Large Convergence of RL Algorithm}\label{secConvRL}
 R-L algorithm starts usually from an initial model of constant density distribution that apparently has maximum entropy as well as being perfectly smooth, then it modifies the estimates step by step by collecting information from the observational data until a reasonable fit is reached. This approach is opposite to that of any regularization methods, which searches for best fitted models subject to constraints like smoothness or flatness.
-Since the \textit{likelihood} of model fitting is improved after each step while an infinite number of iterations is neither possible nor useful, we need to figure out when to stop the iterations. This become increasingly more important especially when \textit{a priori} knowledge about the signal is not available or the signal-to-noise ratio is poor.
+Since the \textit{likelihood} of model fitting is improved after each step while an infinite number of iterations is neither possible nor useful, we need to figure out when to stop the iterations. This become increasingly more important especially when \textit{a priori} knowledge about the signal is not available or the signal-to-noise ratio is poor.\cite{Bi94conv}
 \newpage	
 \subsection[Experiments]{Experimental Observations}
 The algorithm was tested under different conditions to check the convergence and find an optimal number of iterations. The test images in each of the experiments are gray-scale. 
@@ -535,7 +547,7 @@ Graph\ref{convcomp20blur} and Graph\ref{convcomp10blur} show the recorded result
 
 
 %\section{\Large Experiments and Results}
-\section[\Large Effect of kernel]{\Large Effect of kernel size on Image and PSF estimation}After performing experiments to see the convergence of the RL algorithm (Algorithm \ref{alg4}), effect of other parameters on the restoration of images were studied. One such parameter was kernel estimation and size. 
+\section[\Large Effect of kernel]{\Large Effect of kernel size on Image and PSF estimation}\label{secKern}After performing experiments to see the convergence of the RL algorithm (Algorithm \ref{alg4}), effect of other parameters on the restoration of images were studied. One such parameter was kernel estimation and size.\cite{bookchapt3}
 
 \begin{figure}[H]
 	\centering
@@ -554,9 +566,16 @@ Graph\ref{convcomp20blur} and Graph\ref{convcomp10blur} show the recorded result
 \paragraph*{} As the size of kernel increases the estimated image deviates from the original image. Also the kernel estimation for the RL algorithm becomes increasingly difficult. Graph \ref{BIDkernel} provides us an insight as to how the image estimation is affected by the kernel size. The MSE decreases for odd value of kernel size for smaller values. This is a direct implication of the fact that the Gaussian kernel size is chosen to be $\lfloor6*\sigma\rfloor + 1$, which indeed be always be odd. This further is an implication of the fact of the \textit{$ 99\% $ confidence interval}.
 \paragraph*{} Graph \ref{KernelEstkernel} shows that the kernel estimate has minimum effect due to the change in size of the kernel. As the kernel size increases, that is the energy of the kernel spreads, the estimation gets better.
 
-\section{\Large \texttt{C++} Implementation}
+\section{\Large \texttt{C++} Implementation}\label{secCpp}
+For converting the $ \mathtt{MATLAB} $ implementation of the RL algorithm initially $ \mathtt{MATLAB's} $ \textit{C coder} was used. But since the use of some $ \mathtt{MATLAB's} $ \textit{image processing toolbox} function, which do not have a direct conversion to \texttt{C++}, the output needed was not obtained. 
+We then used \textit{opencv} image processing modules to implement the Algorithm \ref{alg4}. The implementation was straight forward with the \textit{opencv} functions available. The implementation uses legacy image storing matrices \textit{IplImage} though as they have better documentation compared to newer available \textit{cv::Mat}. Also the code initially ran only on \textit{Linux} platforms but after the inclusion of \texttt{windows.h}, the code was made to run on Windows platforms as well.
+\paragraph*{}In Figure \ref{degrabar} (right) , the original image (Figure \ref{degrabar} (left)) was blurred using a Gaussian blur kernel. The output of the \texttt{C++} implementation (Figure \ref{myimpl}) and \textit{deconvlucy} $ \mathtt{MATLAB} $ (Figure \ref{matimpl}) are shown. The results are comparable and the difference in the output not so distinguishable to naked eye.
 
-\begin{figure}[ht!]
+\paragraph*{} The image in Figure \ref{motionblurredcam} (left) was blurred with a motion blurring kernel(Figure \ref{motionblurredcam} (right)) . The output of the \texttt{C++} implementation (Figure \ref{myimpl}) and \textit{deconvlucy} $ \mathtt{MATLAB} $ (Figure \ref{matimpl}) are shown. The output of the \textit{deconvlucy }$ \mathtt{MATLAB} $ is better than the \texttt{C++} output because of the implementation of edgetaper which reduces the ringing around the edges\cite{Ber05boundary}.
+
+\paragraph*{} The last experiment was performed on RGB images. As earlier the original RGB image was converted to YCbCr image and then the blur kernel was applied on the \texttt{Y component} (luminance). The output of the  \textit{deconvlucy }$ \mathtt{MATLAB} $ and \texttt{C++} implementation are visibly similar. The difference in the color rendering is not different either.
+
+\begin{figure}[]
 	\begin{minipage}{0.45\textwidth}
 		\centering
 		\includegraphics*[width = 1.2\textwidth]{Images/cppimp/origbar.png}
@@ -572,20 +591,19 @@ Graph\ref{convcomp20blur} and Graph\ref{convcomp10blur} show the recorded result
 
 \begin{figure}
 	\centering
-	\includegraphics[scale = 0.65]{Images/cppimp/matimpl.png}
+	\includegraphics[scale = 0.50]{Images/cppimp/matimpl.png}
 	\caption[$ \mathtt{MATLAB's}$ output ]{Output of \textit{deconvlucy} $ \mathtt{MATLAB} $}
 	\label{matimpl}
 \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[scale = 0.65]{Images/cppimp/myimpl.png}
+	\includegraphics[scale = 0.50]{Images/cppimp/myimpl.png}
 	\caption[\texttt{C++} output]{Output of \texttt{C++} implementation of RL}
 	\label{myimpl}
 \end{figure}
-\newpage
 
-\begin{figure}[ht!]
+\begin{figure}[]
 	\begin{minipage}{0.45\textwidth}
 		\centering
 		\includegraphics*[]{Images/cppimp/origcam.png}
@@ -599,7 +617,7 @@ Graph\ref{convcomp20blur} and Graph\ref{convcomp10blur} show the recorded result
 	\label{motionblurredcam}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[]
 	\centering
 	\begin{minipage}{0.45\textwidth}
 		\centering
@@ -644,14 +662,11 @@ Graph\ref{convcomp20blur} and Graph\ref{convcomp10blur} show the recorded result
 		\label{mypepper}
 	\end{minipage}
 \end{figure}
-%\centering
-%\includegraphics[scale = 0.65]{Images/cppimp/mypepper.png}
-%\centering
-%\includegraphics[]{Images/cppimp/matcam.png}
-%\caption{Output of \textit{deconvlucy} $ \mathtt{MATLAB} $}
-%\label{matcam}
-
+%
+%\chapter[\LARGE Conclusion]{Conclusion}
+%\thispagestyle{empty}
+%We examined 
 \bibliographystyle{ieeetr}
-\nocite{*}
+%\nocite{*}
 \bibliography{thesis}
 \end{document}
